@@ -1,0 +1,103 @@
+# border pixel of windows
+borderpx = 2
+
+# snap pixel
+snap = 32
+
+# 0 means no bar
+showbar = 1
+
+# 0 means bottom bar
+topbar = 1
+
+# font array
+fonts = [ "monospace:size=10" ]
+
+# colors
+SchemeNorm.ColFg = "#bbbbbb"
+SchemeNorm.ColBg = "#222222"
+SchemeNorm.Border = "#444444"
+SchemeSel.ColFg = "#eeeeee"
+SchemeSel.ColBg = "#005577"
+SchemeSel.Border = "#005577"
+
+# tagging
+tags = [ "1", "2", "3", "4", "5", "6", "7", "8", "9" ]
+
+# valid properties: class, instance, title, tag, isfloating, monitor
+rules = [ { class = "GIMP", isfloating = 1 },
+          { class = "Firefox", tag = 8 } ]
+
+# layouts
+
+# factor of master area size [0.05..0.95]
+mfact = 0.55
+
+# number of clients in master area
+nmaster = 1
+
+# 1 means respect size hints in tiled resizals
+resizehints = 1
+
+# 1 will force focus on the fullscreen window
+lockfullscreen = 1
+
+layouts = [ { symbol = "[]=",     arrange = "tile" },
+            { symbol = "><>",     arrange = "NULL" },
+            { symbol = "[M]",     arrange = "monocle" } ]
+
+# key definitions
+# valid keys: super, alt, ctrl, shift
+keys = [ { modifier = [ "alt" ],            key = "p",       function = "spawn",          argument = [ "dmenu_run", "-fn", "monospace:size=10" ] },
+         { modifier = [ "alt", "shift" ],   key = "Return",  function = "spawn",          argument = [ "st" ] },
+         { modifier = [ "alt" ],            key = "b",       function = "togglebar",      argument = { } },
+         { modifier = [ "alt" ],            key = "j",       function = "focusstack",     argument = 1 },
+         { modifier = [ "alt" ],            key = "k",       function = "focusstack",     argument = -1 },
+         { modifier = [ "alt" ],            key = "i",       function = "incnmaster",     argument = 1 },
+         { modifier = [ "alt" ],            key = "d",       function = "incnmaster",     argument = -1 },
+         { modifier = [ "alt" ],            key = "h",       function = "setmfact",       argument = -0.05 },
+         { modifier = [ "alt" ],            key = "l",       function = "setmfact",       argument = 0.05 },
+         { modifier = [ "alt" ],            key = "Return",  function = "zoom",           argument = { } },
+         { modifier = [ "alt" ],            key = "Tab",     function = "view",           argument = { } },
+         { modifier = [ "alt", "shift" ],   key = "c",       function = "killclient",     argument = { } },
+         { modifier = [ "alt" ],            key = "t",       function = "setlayout",      argument = 0 },
+         { modifier = [ "alt" ],            key = "f",       function = "setlayout",      argument = 1 },
+         { modifier = [ "alt" ],            key = "m",       function = "setlayout",      argument = 2 },
+         { modifier = [ "alt" ],            key = "space",   function = "setlayout",      argument = { } },
+         { modifier = [ "alt", "shift" ],   key = "space",   function = "togglefloating", argument = { } },
+         { modifier = [ "alt" ],            key = "0",       function = "view",           argument = -1 },
+         { modifier = [ "alt", "shift" ],   key = "0",       function = "tag",            argument = -1 },
+         { modifier = [ "alt" ],            key = "comma",   function = "focusmon",       argument = -1 },
+         { modifier = [ "alt" ],            key = "period",  function = "focusmon",       argument = 1 },
+         { modifier = [ "alt", "shift" ],   key = "comma",   function = "tagmon",         argument = -1 },
+         { modifier = [ "alt", "shift" ],   key = "period",  function = "tagmon",         argument = 1 },
+         { modifier = [ "alt", "shift" ],   key = "q",       function = "quit",           argument = { } } ]
+
+tagkey = [ { modifier = [ "alt" ],                    function = "view" },
+           { modifier = [ "alt", "ctrl" ],            function = "toggleview" },
+           { modifier = [ "alt", "shift" ],           function = "tag" },
+           { modifier = [ "alt", "shift", "ctrl" ],   function = "toggletag" } ]
+
+tagkeys = [ { key = "1", tag = 0 },
+            { key = "2", tag = 1 },
+            { key = "3", tag = 2 },
+            { key = "4", tag = 3 },
+            { key = "5", tag = 4 },
+            { key = "6", tag = 5 },
+            { key = "7", tag = 6 },
+            { key = "8", tag = 7 },
+            { key = "9", tag = 8 } ]
+
+# button definitions
+# click can be ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle, ClkClientWin, or ClkRootWin
+buttons = [ { click = "ClkLtSymbol",    mask = 0,       button = "button1",   function = "setlayout",       argument = { } },
+            { click = "ClkLtsymbol",    mask = 0,       button = "button3",   function = "setlayout",       argument = 2 },
+            { click = "ClkWinTitle",    mask = 0,       button = "button2",   function = "quit",            argument = { } },
+            { click = "ClkStatusText",  mask = 0,       button = "button2",   function = "spawn",           argument = [ "st" ] },
+            { click = "ClkClientWin",   mask = "alt",   button = "button1",   function = "movemouse",       argument = { } },
+            { click = "ClkClientWin",   mask = "alt",   button = "button2",   function = "togglefloating",  argument = { } },
+            { click = "ClkClientWin",   mask = "alt",   button = "button3",   function = "resizemouse",     argument = { } },
+            { click = "ClkTagBar",      mask = 0,       button = "button1",   function = "view",            argument = { } },
+            { click = "ClkTagBar",      mask = 0,       button = "button3",   function = "toggleview",      argument = { } },
+            { click = "ClkTagBar",      mask = "alt",   button = "button1",   function = "tag",             argument = { } },
+            { click = "ClkTagBar",      mask = "alt",   button = "button3",   function = "toggletag",       argument = { } } ]
