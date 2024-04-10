@@ -490,23 +490,52 @@ cleanup(void)
 	for (i = 0; i < LENGTH(colors); i++)
 		free(scheme[i]);
 	free(scheme);
+	for (int j = 0; j < LENGTH(colorsn); j++) {
+		free((void *) colors[j][ColFg]);
+		free((void *) colors[j][ColBg]);
+		free((void *) colors[j][ColBorder]);
+	}
 	for (i = 0; i < n_fonts; i++)
 		free((void *)fonts[i]);
 	free(fonts);
 	for (i = 0; i < n_tags; i++)
 		free((void *)tags[i]);
 	free(tags);
-	for (i = 0; i < n_rules; i++)
+	for (i = 0; i < n_rules; i++) {
+		free((void *)rules[i]->class);
+		free((void *)rules[i]->instance);
+		free((void *)rules[i]->title);
 		free((void *)rules[i]);
+	}
 	free(rules);
-	for (i = 0; i < n_layouts; i++)
+	for (i = 0; i < n_layouts; i++) {
+		free((void *)layouts[i]->symbol);
 		free((void *)layouts[i]);
+	}
 	free(layouts);
-	for (i = 0; i < n_keys; i++)
+	for (i = 0; i < n_keys; i++) {
+		if (keys[i]->func == spawn) {
+			int j = 0;
+			while (((char **) keys[i]->arg.v)[j] != NULL) {
+				free(((char **) keys[i]->arg.v)[j]);
+				j++;
+			}
+			free(((char **) keys[i]->arg.v));
+		}
 		free((void *)keys[i]);
+	}
 	free(keys);
-	for (i = 0; i < n_buttons; i++)
+	for (i = 0; i < n_buttons; i++) {
+		if (buttons[i]->func == spawn) {
+			int j = 0;
+			while (((char **) buttons[i]->arg.v)[j] != NULL) {
+				free(((char **) buttons[i]->arg.v)[j]);
+				j++;
+			}
+			free(((char **) buttons[i]->arg.v));
+		}
 		free((void *)buttons[i]);
+	}
 	free(buttons);
 	XDestroyWindow(dpy, wmcheckwin);
 	drw_free(drw);
@@ -2156,7 +2185,6 @@ zoom(const Arg *arg)
 		return;
 	pop(c);
 }
-
 
 int
 main(int argc, char *argv[])

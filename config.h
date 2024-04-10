@@ -12,14 +12,14 @@ static const Key **keys;
 static const Button **buttons;
 static int n_fonts, n_tags, n_rules, n_layouts, n_keys, n_buttons;
 
-static void
+static int
 cfg_read_str(toml_table_t *conf, char *key, const char **dest)
 {
 	toml_datum_t d = toml_string_in(conf, key);
 	if (!d.ok)
-		return;
-	*dest = strdup(d.u.s);
-	free(d.u.s);
+		return 0;
+	*dest = d.u.s;
+	return 1;
 }
 
 static void
@@ -41,20 +41,20 @@ cfg_read_int(toml_table_t *conf, char *key, int *dest)
 }
 
 int
-cfg_read_strarr(toml_table_t *conf, char *key, const char ***dest)
+cfg_read_strarr(toml_table_t *conf, char *key, const char ***dest, int ins_null)
 {
 	toml_array_t *arr = toml_array_in(conf, key);
 	int size = toml_array_nelem(arr);
-	const char **dst = ecalloc(size+1, sizeof(char *));
+	const char **dst = ecalloc(size + (ins_null ? 1 : 0), sizeof(char *));
 	int i = 0;
 	for (;; i++) {
 		toml_datum_t d = toml_string_at(arr, i);
 		if (!d.ok)
 			break;
-		dst[i] = strdup(d.u.s);
-		free(d.u.s);
+		dst[i] = d.u.s;
 	}
-	dst[i] = NULL;
+	if (ins_null)
+		dst[i] = NULL;
 	*dest = dst;
 	return size;
 }
@@ -62,11 +62,14 @@ cfg_read_strarr(toml_table_t *conf, char *key, const char ***dest)
 void
 parse_functionargs(toml_table_t *tbl, void (**func)(const Arg *arg), const Arg *arg)
 {
-	const char *field = ecalloc(128, sizeof(char));
+	const char *field;
+
 	cfg_read_str(tbl, "function", &field);
 	if (!strcmp(field, "spawn")) {
 		*func = spawn;
-		cfg_read_strarr(tbl, "argument", (const char ***) &arg->v);
+		const char **v;
+		cfg_read_strarr(tbl, "argument", &v, 1);
+		((Arg *)arg)->v = v;
 	} else if (!strcmp(field, "togglebar"))
 		*func = togglebar;
 	else if (!strcmp(field, "focusstack")) {
@@ -89,11 +92,11 @@ parse_functionargs(toml_table_t *tbl, void (**func)(const Arg *arg), const Arg *
 		*func = setlayout;
 		int i_field = -1;
 		cfg_read_int(tbl, "argument", &i_field);
-    if(i_field != -1) {
-      const Layout ***v = (const Layout ***)&arg->v;
-      *v = &layouts[i_field];
-    } else
-      arg = NULL;
+		if (i_field != -1) {
+			const Layout ***v = (const Layout ***)&arg->v;
+			*v = &layouts[i_field];
+		} else
+			arg = NULL;
 	} else if (!strcmp(field, "togglefloating"))
 		*func = togglefloating;
 	else if (!strcmp(field, "tag")) {
@@ -115,15 +118,16 @@ parse_functionargs(toml_table_t *tbl, void (**func)(const Arg *arg), const Arg *
 		*func = toggleview;
 	else if (!strcmp(field, "toggletag"))
 		*func = toggletag;
+	free((char *)field);
 }
 
 int
 parse_modifier(toml_table_t *tbl, char *field)
 {
 	const char **mods;
-	int n_mods = cfg_read_strarr(tbl, field, &mods);
+	int n_mods = cfg_read_strarr(tbl, field, &mods, 0);
 	int mod = 0;
-	for (int i = 0; i < n_mods; i++)
+	for (int i = 0; i < n_mods; i++) {
 		if (!strcmp("super", mods[i]))
 			mod |= Mod4Mask;
 		else if (!strcmp("shift", mods[i]))
@@ -132,15 +136,20 @@ parse_modifier(toml_table_t *tbl, char *field)
 			mod |= ControlMask;
 		else if (!strcmp("alt", mods[i]))
 			mod |= Mod1Mask;
+		free((void *)mods[i]);
+	}
+	free(mods);
 	return mod;
 }
 
 KeySym
 parse_keysym(toml_table_t *tbl, char *f)
 {
-	const char *field = ecalloc(128, sizeof(char));
+	const char *field;
 	cfg_read_str(tbl, f, &field);
-	return XStringToKeysym(field);
+	KeySym val = XStringToKeysym(field);
+	free((void *)field);
+	return val;
 }
 
 void
@@ -156,7 +165,6 @@ read_cfgfile()
 {
 	const char *config_file = strcat(getenv("XDG_CONFIG_HOME"), dwm_cfg);
 	FILE *fp = fopen(config_file, "r");
-	const char *field = ecalloc(128, sizeof(char));
 	if (fp) {
 		char errbuf[200];
 		toml_table_t *conf = toml_parse_file(fp, errbuf, sizeof(errbuf));
@@ -170,8 +178,8 @@ read_cfgfile()
 			cfg_read_int(conf, "resizehints", &resizehints);
 			cfg_read_int(conf, "lockfullscreen", &lockfullscreen);
 			cfg_read_float(conf, "mfact", &mfact);
-			n_fonts = cfg_read_strarr(conf, "fonts", &fonts);
-			n_tags = cfg_read_strarr(conf, "tags", &tags);
+			n_fonts = cfg_read_strarr(conf, "fonts", &fonts, 0);
+			n_tags = cfg_read_strarr(conf, "tags", &tags, 0);
 			/* color table */
 			for (int j = 0; j < LENGTH(colorsn); j++) {
 				toml_table_t *tbl = toml_table_in(conf, colorsn[j]);
@@ -201,6 +209,7 @@ read_cfgfile()
 			n_layouts = toml_array_nelem(d);
 			layouts = ecalloc(n_layouts, sizeof(Layout));
 			for (int i = 0; i < n_layouts; i++) {
+				const char *field;
 				toml_table_t *tbl = toml_table_at(d, i);
 				if (!tbl)
 					continue;
@@ -214,6 +223,7 @@ read_cfgfile()
 				else
 					l->arrange = NULL;
 				layouts[i] = l;
+				free((void *)field);
 			}
 			/* keys */
 			d = toml_array_in(conf, "keys");
@@ -253,6 +263,7 @@ read_cfgfile()
 				if (!tbl)
 					continue;
 				Button *b = ecalloc(1, sizeof(Button));
+				const char *field;
 				cfg_read_str(tbl, "click", &field);
 				if (!strcmp(field, "ClkLtSymbol"))
 					b->click = ClkLtSymbol;
@@ -264,15 +275,20 @@ read_cfgfile()
 					b->click = ClkClientWin;
 				else if (!strcmp(field, "ClkTagBar"))
 					b->click = ClkTagBar;
-				cfg_read_str(tbl, "mask", &field);
-				if (!strcmp(field, "super"))
-					b->mask = Mod4Mask;
-				else if (!strcmp(field, "shift"))
-					b->mask = ShiftMask;
-				else if (!strcmp(field, "ctrl"))
-					b->mask = ControlMask;
-				else if (!strcmp(field, "alt"))
-					b->mask = Mod1Mask;
+				else if (!strcmp(field, "ClkRootWin"))
+					b->click = ClkRootWin;
+				free((void *)field);
+				if (cfg_read_str(tbl, "mask", &field)) {
+					if (!strcmp(field, "super"))
+						b->mask = Mod4Mask;
+					else if (!strcmp(field, "shift"))
+						b->mask = ShiftMask;
+					else if (!strcmp(field, "ctrl"))
+						b->mask = ControlMask;
+					else if (!strcmp(field, "alt"))
+						b->mask = Mod1Mask;
+					free((void *)field);
+				}
 				cfg_read_str(tbl, "button", &field);
 				if (!strcmp(field, "button1"))
 					b->button = Button1;
@@ -281,6 +297,7 @@ read_cfgfile()
 				else if (!strcmp(field, "button3"))
 					b->button = Button3;
 				parse_functionargs(tbl, &b->func, &b->arg);
+				free((void *)field);
 				buttons[i] = b;
 			}
 			toml_free(conf);
