@@ -1,0 +1,978 @@
+diff --git a/.gitignore b/.gitignore
+new file mode 100644
+index 0000000..095e840
+--- /dev/null
++++ b/.gitignore
+@@ -0,0 +1,2 @@
++*.o
++dwm
+diff --git a/.gitmodules b/.gitmodules
+new file mode 100644
+index 0000000..f033c8c
+--- /dev/null
++++ b/.gitmodules
+@@ -0,0 +1,3 @@
++[submodule "tomlc99"]
++	path = tomlc99
++	url = https://github.com/cktan/tomlc99
+diff --git a/Makefile b/Makefile
+index ffa69b4..cbfed94 100644
+--- a/Makefile
++++ b/Makefile
+@@ -3,7 +3,7 @@
+ 
+ include config.mk
+ 
+-SRC = drw.c dwm.c util.c
++SRC = drw.c dwm.c util.c tomlc99/toml.c
+ OBJ = ${SRC:.c=.o}
+ 
+ all: dwm
+@@ -11,20 +11,17 @@ all: dwm
+ .c.o:
+ 	${CC} -c ${CFLAGS} $<
+ 
+-${OBJ}: config.h config.mk
+-
+-config.h:
+-	cp config.def.h $@
++${OBJ}: config.mk
+ 
+ dwm: ${OBJ}
+-	${CC} -o $@ ${OBJ} ${LDFLAGS}
++	${CC} -o $@ drw.o dwm.o util.o toml.o ${LDFLAGS}
+ 
+ clean:
+-	rm -f dwm ${OBJ} dwm-${VERSION}.tar.gz
++	rm -f dwm ${OBJ} toml.o dwm-${VERSION}.tar.gz
+ 
+ dist: clean
+ 	mkdir -p dwm-${VERSION}
+-	cp -R LICENSE Makefile README config.def.h config.mk\
++	cp -R LICENSE Makefile README config.mk\
+ 		dwm.1 drw.h util.h ${SRC} dwm.png transient.c dwm-${VERSION}
+ 	tar -cf dwm-${VERSION}.tar dwm-${VERSION}
+ 	gzip dwm-${VERSION}.tar
+diff --git a/config.def.h b/config.def.h
+deleted file mode 100644
+index 9efa774..0000000
+--- a/config.def.h
++++ /dev/null
+@@ -1,116 +0,0 @@
+-/* See LICENSE file for copyright and license details. */
+-
+-/* appearance */
+-static const unsigned int borderpx  = 1;        /* border pixel of windows */
+-static const unsigned int snap      = 32;       /* snap pixel */
+-static const int showbar            = 1;        /* 0 means no bar */
+-static const int topbar             = 1;        /* 0 means bottom bar */
+-static const char *fonts[]          = { "monospace:size=10" };
+-static const char dmenufont[]       = "monospace:size=10";
+-static const char col_gray1[]       = "#222222";
+-static const char col_gray2[]       = "#444444";
+-static const char col_gray3[]       = "#bbbbbb";
+-static const char col_gray4[]       = "#eeeeee";
+-static const char col_cyan[]        = "#005577";
+-static const char *colors[][3]      = {
+-	/*               fg         bg         border   */
+-	[SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
+-	[SchemeSel]  = { col_gray4, col_cyan,  col_cyan  },
+-};
+-
+-/* tagging */
+-static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
+-
+-static const Rule rules[] = {
+-	/* xprop(1):
+-	 *	WM_CLASS(STRING) = instance, class
+-	 *	WM_NAME(STRING) = title
+-	 */
+-	/* class      instance    title       tags mask     isfloating   monitor */
+-	{ "Gimp",     NULL,       NULL,       0,            1,           -1 },
+-	{ "Firefox",  NULL,       NULL,       1 << 8,       0,           -1 },
+-};
+-
+-/* layout(s) */
+-static const float mfact     = 0.55; /* factor of master area size [0.05..0.95] */
+-static const int nmaster     = 1;    /* number of clients in master area */
+-static const int resizehints = 1;    /* 1 means respect size hints in tiled resizals */
+-static const int lockfullscreen = 1; /* 1 will force focus on the fullscreen window */
+-
+-static const Layout layouts[] = {
+-	/* symbol     arrange function */
+-	{ "[]=",      tile },    /* first entry is default */
+-	{ "><>",      NULL },    /* no layout function means floating behavior */
+-	{ "[M]",      monocle },
+-};
+-
+-/* key definitions */
+-#define MODKEY Mod1Mask
+-#define TAGKEYS(KEY,TAG) \
+-	{ MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
+-	{ MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
+-	{ MODKEY|ShiftMask,             KEY,      tag,            {.ui = 1 << TAG} }, \
+-	{ MODKEY|ControlMask|ShiftMask, KEY,      toggletag,      {.ui = 1 << TAG} },
+-
+-/* helper for spawning shell commands in the pre dwm-5.0 fashion */
+-#define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
+-
+-/* commands */
+-static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
+-static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
+-static const char *termcmd[]  = { "st", NULL };
+-
+-static const Key keys[] = {
+-	/* modifier                     key        function        argument */
+-	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
+-	{ MODKEY|ShiftMask,             XK_Return, spawn,          {.v = termcmd } },
+-	{ MODKEY,                       XK_b,      togglebar,      {0} },
+-	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
+-	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
+-	{ MODKEY,                       XK_i,      incnmaster,     {.i = +1 } },
+-	{ MODKEY,                       XK_d,      incnmaster,     {.i = -1 } },
+-	{ MODKEY,                       XK_h,      setmfact,       {.f = -0.05} },
+-	{ MODKEY,                       XK_l,      setmfact,       {.f = +0.05} },
+-	{ MODKEY,                       XK_Return, zoom,           {0} },
+-	{ MODKEY,                       XK_Tab,    view,           {0} },
+-	{ MODKEY|ShiftMask,             XK_c,      killclient,     {0} },
+-	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} },
+-	{ MODKEY,                       XK_f,      setlayout,      {.v = &layouts[1]} },
+-	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} },
+-	{ MODKEY,                       XK_space,  setlayout,      {0} },
+-	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
+-	{ MODKEY,                       XK_0,      view,           {.ui = ~0 } },
+-	{ MODKEY|ShiftMask,             XK_0,      tag,            {.ui = ~0 } },
+-	{ MODKEY,                       XK_comma,  focusmon,       {.i = -1 } },
+-	{ MODKEY,                       XK_period, focusmon,       {.i = +1 } },
+-	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
+-	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
+-	TAGKEYS(                        XK_1,                      0)
+-	TAGKEYS(                        XK_2,                      1)
+-	TAGKEYS(                        XK_3,                      2)
+-	TAGKEYS(                        XK_4,                      3)
+-	TAGKEYS(                        XK_5,                      4)
+-	TAGKEYS(                        XK_6,                      5)
+-	TAGKEYS(                        XK_7,                      6)
+-	TAGKEYS(                        XK_8,                      7)
+-	TAGKEYS(                        XK_9,                      8)
+-	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
+-};
+-
+-/* button definitions */
+-/* click can be ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle, ClkClientWin, or ClkRootWin */
+-static const Button buttons[] = {
+-	/* click                event mask      button          function        argument */
+-	{ ClkLtSymbol,          0,              Button1,        setlayout,      {0} },
+-	{ ClkLtSymbol,          0,              Button3,        setlayout,      {.v = &layouts[2]} },
+-	{ ClkWinTitle,          0,              Button2,        zoom,           {0} },
+-	{ ClkStatusText,        0,              Button2,        spawn,          {.v = termcmd } },
+-	{ ClkClientWin,         MODKEY,         Button1,        movemouse,      {0} },
+-	{ ClkClientWin,         MODKEY,         Button2,        togglefloating, {0} },
+-	{ ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0} },
+-	{ ClkTagBar,            0,              Button1,        view,           {0} },
+-	{ ClkTagBar,            0,              Button3,        toggleview,     {0} },
+-	{ ClkTagBar,            MODKEY,         Button1,        tag,            {0} },
+-	{ ClkTagBar,            MODKEY,         Button3,        toggletag,      {0} },
+-};
+-
+diff --git a/config.h b/config.h
+new file mode 100644
+index 0000000..2fa39c5
+--- /dev/null
++++ b/config.h
+@@ -0,0 +1,307 @@
++/* configuration file location, subdirectory of XDG_CONFIG_HOME */
++static const char *dwm_cfg = "/dwm/dwm.toml";
++
++static int borderpx, snap, showbar, topbar;
++static const char *colors[SchemeLast][ColLast];
++static float mfact;
++static int nmaster, resizehints, lockfullscreen;
++static const char **fonts, **tags;
++static const Rule **rules;
++static const Layout **layouts;
++static const Key **keys;
++static const Button **buttons;
++static int n_fonts, n_tags, n_rules, n_layouts, n_keys, n_buttons;
++
++static int
++cfg_read_str(toml_table_t *conf, char *key, const char **dest)
++{
++	toml_datum_t d = toml_string_in(conf, key);
++	if (!d.ok)
++		return 0;
++	*dest = d.u.s;
++	return 1;
++}
++
++static void
++cfg_read_float(toml_table_t *conf, char *key, float *dest)
++{
++	toml_datum_t d = toml_double_in(conf, key);
++	if (!d.ok)
++		return;
++	*dest = d.u.d;
++}
++
++static void
++cfg_read_int(toml_table_t *conf, char *key, int *dest)
++{
++	toml_datum_t d = toml_int_in(conf, key);
++	if (!d.ok)
++		return;
++	*dest = d.u.i;
++}
++
++int
++cfg_read_strarr(toml_table_t *conf, char *key, const char ***dest, int ins_null)
++{
++	toml_array_t *arr = toml_array_in(conf, key);
++	int size = toml_array_nelem(arr);
++	const char **dst = ecalloc(size + (ins_null ? 1 : 0), sizeof(char *));
++	int i = 0;
++	for (;; i++) {
++		toml_datum_t d = toml_string_at(arr, i);
++		if (!d.ok)
++			break;
++		dst[i] = d.u.s;
++	}
++	if (ins_null)
++		dst[i] = NULL;
++	*dest = dst;
++	return size;
++}
++
++void
++parse_functionargs(toml_table_t *tbl, void (**func)(const Arg *arg), const Arg *arg)
++{
++	const char *field;
++
++	cfg_read_str(tbl, "function", &field);
++	if (!strcmp(field, "spawn")) {
++		*func = spawn;
++		const char **v;
++		cfg_read_strarr(tbl, "argument", &v, 1);
++		((Arg *)arg)->v = v;
++	} else if (!strcmp(field, "togglebar"))
++		*func = togglebar;
++	else if (!strcmp(field, "focusstack")) {
++		*func = focusstack;
++		cfg_read_int(tbl, "argument", (int *)&arg->i);
++	} else if (!strcmp(field, "incnmaster")) {
++		*func = incnmaster;
++		cfg_read_int(tbl, "argument", (int *)&arg->i);
++	} else if (!strcmp(field, "setmfact")) {
++		*func = setmfact;
++		cfg_read_float(tbl, "argument", (float *)&arg->f);
++	} else if (!strcmp(field, "zoom"))
++		*func = zoom;
++	else if (!strcmp(field, "view")) {
++		*func = view;
++		cfg_read_int(tbl, "argument", (int *)&arg->i);
++	} else if (!strcmp(field, "killclient"))
++		*func = killclient;
++	else if (!strcmp(field, "setlayout")) {
++		*func = setlayout;
++		int i_field = -1;
++		cfg_read_int(tbl, "argument", &i_field);
++		if (i_field != -1) {
++			const Layout ***v = (const Layout ***)&arg->v;
++			*v = &layouts[i_field];
++		} else
++			arg = NULL;
++	} else if (!strcmp(field, "togglefloating"))
++		*func = togglefloating;
++	else if (!strcmp(field, "tag")) {
++		*func = tag;
++		cfg_read_int(tbl, "argument", (int *)&arg->i);
++	} else if (!strcmp(field, "focusmon")) {
++		*func = focusmon;
++		cfg_read_int(tbl, "argument", (int *)&arg->i);
++	} else if (!strcmp(field, "tagmon")) {
++		*func = tagmon;
++		cfg_read_int(tbl, "argument", (int *)&arg->i);
++	} else if (!strcmp(field, "quit"))
++		*func = quit;
++	else if (!strcmp(field, "movemouse"))
++		*func = movemouse;
++	else if (!strcmp(field, "resizemouse"))
++		*func = resizemouse;
++	else if (!strcmp(field, "toggleview"))
++		*func = toggleview;
++	else if (!strcmp(field, "toggletag"))
++		*func = toggletag;
++	free((char *)field);
++}
++
++int
++parse_modifier(toml_table_t *tbl, char *field)
++{
++	const char **mods;
++	int n_mods = cfg_read_strarr(tbl, field, &mods, 0);
++	int mod = 0;
++	for (int i = 0; i < n_mods; i++) {
++		if (!strcmp("super", mods[i]))
++			mod |= Mod4Mask;
++		else if (!strcmp("shift", mods[i]))
++			mod |= ShiftMask;
++		else if (!strcmp("ctrl", mods[i]))
++			mod |= ControlMask;
++		else if (!strcmp("alt", mods[i]))
++			mod |= Mod1Mask;
++		free((void *)mods[i]);
++	}
++	free(mods);
++	return mod;
++}
++
++KeySym
++parse_keysym(toml_table_t *tbl, char *f)
++{
++	const char *field;
++	cfg_read_str(tbl, f, &field);
++	KeySym val = XStringToKeysym(field);
++	free((void *)field);
++	return val;
++}
++
++void
++parse_tag(toml_table_t *tbl, char *field, int *dest)
++{
++	int val;
++	cfg_read_int(tbl, field, (int *)&val);
++	*dest = 1 << val;
++}
++
++void
++read_cfgfile()
++{
++	const char *config_file = strcat(getenv("XDG_CONFIG_HOME"), dwm_cfg);
++	FILE *fp = fopen(config_file, "r");
++	if (fp) {
++		char errbuf[200];
++		toml_table_t *conf = toml_parse_file(fp, errbuf, sizeof(errbuf));
++		fclose(fp);
++		if (conf) {
++			cfg_read_int(conf, "borderpx", &borderpx);
++			cfg_read_int(conf, "snap", &snap);
++			cfg_read_int(conf, "showbar", &showbar);
++			cfg_read_int(conf, "topbar", &topbar);
++			cfg_read_int(conf, "nmaster", &nmaster);
++			cfg_read_int(conf, "resizehints", &resizehints);
++			cfg_read_int(conf, "lockfullscreen", &lockfullscreen);
++			cfg_read_float(conf, "mfact", &mfact);
++			n_fonts = cfg_read_strarr(conf, "fonts", &fonts, 0);
++			n_tags = cfg_read_strarr(conf, "tags", &tags, 0);
++			/* color table */
++			for (int j = 0; j < LENGTH(colorsn); j++) {
++				toml_table_t *tbl = toml_table_in(conf, colorsn[j]);
++				cfg_read_str(tbl, "ColFg", &colors[j][ColFg]);
++				cfg_read_str(tbl, "ColBg", &colors[j][ColBg]);
++				cfg_read_str(tbl, "Border", &colors[j][ColBorder]);
++			}
++			/* rules */
++			toml_array_t *d = toml_array_in(conf, "rules");
++			n_rules = toml_array_nelem(d);
++			rules = ecalloc(n_rules, sizeof(Rule));
++			for (int i = 0; i < n_rules; i++) {
++				toml_table_t *tbl = toml_table_at(d, i);
++				if (!tbl)
++					continue;
++				Rule *r = ecalloc(1, sizeof(Rule));
++				cfg_read_str(tbl, "class", &r->class);
++				cfg_read_str(tbl, "instance", &r->instance);
++				cfg_read_str(tbl, "title", &r->title);
++				parse_tag(tbl, "tag", (int *) &r->tags);
++				cfg_read_int(tbl, "isfloating", &r->isfloating);
++				cfg_read_int(tbl, "monitor", &r->monitor);
++				rules[i] = r;
++			}
++			/* layouts */
++			d = toml_array_in(conf, "layouts");
++			n_layouts = toml_array_nelem(d);
++			layouts = ecalloc(n_layouts, sizeof(Layout));
++			for (int i = 0; i < n_layouts; i++) {
++				const char *field;
++				toml_table_t *tbl = toml_table_at(d, i);
++				if (!tbl)
++					continue;
++				Layout *l = ecalloc(1, sizeof(Layout));
++				cfg_read_str(tbl, "symbol", &l->symbol);
++				cfg_read_str(tbl, "arrange", &field);
++				if (!strcmp(field, "tile"))
++					l->arrange = tile;
++				else if (!strcmp(field, "monocle"))
++					l->arrange = monocle;
++				else
++					l->arrange = NULL;
++				layouts[i] = l;
++				free((void *)field);
++			}
++			/* keys */
++			d = toml_array_in(conf, "keys");
++			n_keys = toml_array_nelem(d);
++			toml_array_t *tagkeys = toml_array_in(conf, "tagkeys");
++			toml_array_t *tagkey = toml_array_in(conf, "tagkey");
++			int n_tagkeys = toml_array_nelem(tagkeys);
++			int n_tagkey = toml_array_nelem(tagkey);
++			keys = ecalloc(((n_tagkey * n_tagkeys) + n_keys), sizeof(Key));
++			for (int i = 0; i < n_keys; i++) {
++				toml_table_t *tbl = toml_table_at(d, i);
++				Key *k = ecalloc(1, sizeof(Key));
++				k->mod = parse_modifier(tbl, "modifier");
++				k->keysym = parse_keysym(tbl, "key");
++				parse_functionargs(tbl, &k->func, &k->arg);
++				keys[i] = k;
++			}
++			/* tag keys */
++			for (int i = 0; i < n_tagkeys; i++) {
++				toml_table_t *tks = toml_table_at(tagkeys, i);
++				for (int j = 0; j < n_tagkey; j++) {
++					toml_table_t *tk = toml_table_at(tagkey, j);
++					Key *k = ecalloc(1, sizeof(Key));
++					k->mod = parse_modifier(tk, "modifier");
++					k->keysym = parse_keysym(tks, "key");
++					parse_functionargs(tk, &k->func, &k->arg);
++					parse_tag(tks, "tag", (int *)&k->arg.ui);
++					keys[n_keys++] = k;
++				}
++			}
++			/* buttons */
++			d = toml_array_in(conf, "buttons");
++			n_buttons = toml_array_nelem(d);
++			buttons = ecalloc(n_buttons, sizeof(Button));
++			for (int i = 0; i < n_buttons; i++) {
++				toml_table_t *tbl = toml_table_at(d, i);
++				if (!tbl)
++					continue;
++				Button *b = ecalloc(1, sizeof(Button));
++				const char *field;
++				cfg_read_str(tbl, "click", &field);
++				if (!strcmp(field, "ClkLtSymbol"))
++					b->click = ClkLtSymbol;
++				else if (!strcmp(field, "ClkWinTitle"))
++					b->click = ClkWinTitle;
++				else if (!strcmp(field, "ClkStatusText"))
++					b->click = ClkStatusText;
++				else if (!strcmp(field, "ClkClientWin"))
++					b->click = ClkClientWin;
++				else if (!strcmp(field, "ClkTagBar"))
++					b->click = ClkTagBar;
++				else if (!strcmp(field, "ClkRootWin"))
++					b->click = ClkRootWin;
++				free((void *)field);
++				if (cfg_read_str(tbl, "mask", &field)) {
++					if (!strcmp(field, "super"))
++						b->mask = Mod4Mask;
++					else if (!strcmp(field, "shift"))
++						b->mask = ShiftMask;
++					else if (!strcmp(field, "ctrl"))
++						b->mask = ControlMask;
++					else if (!strcmp(field, "alt"))
++						b->mask = Mod1Mask;
++					free((void *)field);
++				}
++				cfg_read_str(tbl, "button", &field);
++				if (!strcmp(field, "button1"))
++					b->button = Button1;
++				else if (!strcmp(field, "button2"))
++					b->button = Button2;
++				else if (!strcmp(field, "button3"))
++					b->button = Button3;
++				parse_functionargs(tbl, &b->func, &b->arg);
++				free((void *)field);
++				buttons[i] = b;
++			}
++			toml_free(conf);
++		}
++		fprintf(stderr, errbuf);
++	}
++}
+diff --git a/drw.h b/drw.h
+index 6471431..f05a15c 100644
+--- a/drw.h
++++ b/drw.h
+@@ -12,7 +12,7 @@ typedef struct Fnt {
+ 	struct Fnt *next;
+ } Fnt;
+ 
+-enum { ColFg, ColBg, ColBorder }; /* Clr scheme index */
++enum { ColFg, ColBg, ColBorder, ColLast }; /* Clr scheme index */
+ typedef XftColor Clr;
+ 
+ typedef struct {
+diff --git a/dwm.c b/dwm.c
+index f1d86b2..0c9dfb5 100644
+--- a/dwm.c
++++ b/dwm.c
+@@ -36,6 +36,7 @@
+ #include <X11/Xlib.h>
+ #include <X11/Xproto.h>
+ #include <X11/Xutil.h>
++#include "tomlc99/toml.h"
+ #ifdef XINERAMA
+ #include <X11/extensions/Xinerama.h>
+ #endif /* XINERAMA */
+@@ -54,12 +55,12 @@
+ #define MOUSEMASK               (BUTTONMASK|PointerMotionMask)
+ #define WIDTH(X)                ((X)->w + 2 * (X)->bw)
+ #define HEIGHT(X)               ((X)->h + 2 * (X)->bw)
+-#define TAGMASK                 ((1 << LENGTH(tags)) - 1)
++#define TAGMASK                 ((1 << n_tags) - 1)
+ #define TEXTW(X)                (drw_fontset_getwidth(drw, (X)) + lrpad)
+ 
+ /* enums */
+ enum { CurNormal, CurResize, CurMove, CurLast }; /* cursor */
+-enum { SchemeNorm, SchemeSel }; /* color schemes */
++enum { SchemeNorm, SchemeSel, SchemeLast }; /* color schemes */
+ enum { NetSupported, NetWMName, NetWMState, NetWMCheck,
+        NetWMFullscreen, NetActiveWindow, NetWMWindowType,
+        NetWMWindowTypeDialog, NetClientList, NetLast }; /* EWMH atoms */
+@@ -67,6 +68,8 @@ enum { WMProtocols, WMDelete, WMState, WMTakeFocus, WMLast }; /* default atoms *
+ enum { ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle,
+        ClkClientWin, ClkRootWin, ClkLast }; /* clicks */
+ 
++const char* colorsn[] = { "SchemeNorm", "SchemeSel"}; /* color schemes */
++
+ typedef union {
+ 	int i;
+ 	unsigned int ui;
+@@ -129,7 +132,7 @@ struct Monitor {
+ 	Client *stack;
+ 	Monitor *next;
+ 	Window barwin;
+-	const Layout *lt[2];
++	const Layout **lt[2];
+ };
+ 
+ typedef struct {
+@@ -271,9 +274,6 @@ static Window root, wmcheckwin;
+ /* configuration, allows nested code to access above variables */
+ #include "config.h"
+ 
+-/* compile-time check if all tags fit into an unsigned int bit array. */
+-struct NumTags { char limitexceeded[LENGTH(tags) > 31 ? -1 : 1]; };
+-
+ /* function implementations */
+ void
+ applyrules(Client *c)
+@@ -291,8 +291,8 @@ applyrules(Client *c)
+ 	class    = ch.res_class ? ch.res_class : broken;
+ 	instance = ch.res_name  ? ch.res_name  : broken;
+ 
+-	for (i = 0; i < LENGTH(rules); i++) {
+-		r = &rules[i];
++	for (i = 0; i < n_rules; i++) {
++		r = rules[i];
+ 		if ((!r->title || strstr(c->name, r->title))
+ 		&& (!r->class || strstr(class, r->class))
+ 		&& (!r->instance || strstr(instance, r->instance)))
+@@ -343,7 +343,7 @@ applysizehints(Client *c, int *x, int *y, int *w, int *h, int interact)
+ 		*h = bh;
+ 	if (*w < bh)
+ 		*w = bh;
+-	if (resizehints || c->isfloating || !c->mon->lt[c->mon->sellt]->arrange) {
++	if (resizehints || c->isfloating || !(*c->mon->lt[c->mon->sellt])->arrange) {
+ 		if (!c->hintsvalid)
+ 			updatesizehints(c);
+ 		/* see last two sentences in ICCCM 4.1.2.3 */
+@@ -396,9 +396,9 @@ arrange(Monitor *m)
+ void
+ arrangemon(Monitor *m)
+ {
+-	strncpy(m->ltsymbol, m->lt[m->sellt]->symbol, sizeof m->ltsymbol);
+-	if (m->lt[m->sellt]->arrange)
+-		m->lt[m->sellt]->arrange(m);
++	strncpy(m->ltsymbol, (*m->lt[m->sellt])->symbol, sizeof m->ltsymbol);
++	if ((*m->lt[m->sellt])->arrange)
++		(*m->lt[m->sellt])->arrange(m);
+ }
+ 
+ void
+@@ -435,8 +435,8 @@ buttonpress(XEvent *e)
+ 		i = x = 0;
+ 		do
+ 			x += TEXTW(tags[i]);
+-		while (ev->x >= x && ++i < LENGTH(tags));
+-		if (i < LENGTH(tags)) {
++		while (ev->x >= x && ++i < n_tags);
++		if (i < n_tags) {
+ 			click = ClkTagBar;
+ 			arg.ui = 1 << i;
+ 		} else if (ev->x < x + TEXTW(selmon->ltsymbol))
+@@ -451,10 +451,10 @@ buttonpress(XEvent *e)
+ 		XAllowEvents(dpy, ReplayPointer, CurrentTime);
+ 		click = ClkClientWin;
+ 	}
+-	for (i = 0; i < LENGTH(buttons); i++)
+-		if (click == buttons[i].click && buttons[i].func && buttons[i].button == ev->button
+-		&& CLEANMASK(buttons[i].mask) == CLEANMASK(ev->state))
+-			buttons[i].func(click == ClkTagBar && buttons[i].arg.i == 0 ? &arg : &buttons[i].arg);
++	for (i = 0; i < n_buttons; i++)
++		if (click == buttons[i]->click && buttons[i]->func && buttons[i]->button == ev->button
++		&& CLEANMASK(buttons[i]->mask) == CLEANMASK(ev->state))
++			buttons[i]->func(click == ClkTagBar && buttons[i]->arg.i == 0 ? &arg : &buttons[i]->arg);
+ }
+ 
+ void
+@@ -472,7 +472,8 @@ void
+ cleanup(void)
+ {
+ 	Arg a = {.ui = ~0};
+-	Layout foo = { "", NULL };
++	Layout f = { "", NULL };
++	const Layout *foo = &f;
+ 	Monitor *m;
+ 	size_t i;
+ 
+@@ -489,6 +490,53 @@ cleanup(void)
+ 	for (i = 0; i < LENGTH(colors); i++)
+ 		free(scheme[i]);
+ 	free(scheme);
++	for (int j = 0; j < LENGTH(colorsn); j++) {
++		free((void *) colors[j][ColFg]);
++		free((void *) colors[j][ColBg]);
++		free((void *) colors[j][ColBorder]);
++	}
++	for (i = 0; i < n_fonts; i++)
++		free((void *)fonts[i]);
++	free(fonts);
++	for (i = 0; i < n_tags; i++)
++		free((void *)tags[i]);
++	free(tags);
++	for (i = 0; i < n_rules; i++) {
++		free((void *)rules[i]->class);
++		free((void *)rules[i]->instance);
++		free((void *)rules[i]->title);
++		free((void *)rules[i]);
++	}
++	free(rules);
++	for (i = 0; i < n_layouts; i++) {
++		free((void *)layouts[i]->symbol);
++		free((void *)layouts[i]);
++	}
++	free(layouts);
++	for (i = 0; i < n_keys; i++) {
++		if (keys[i]->func == spawn) {
++			int j = 0;
++			while (((char **) keys[i]->arg.v)[j] != NULL) {
++				free(((char **) keys[i]->arg.v)[j]);
++				j++;
++			}
++			free(((char **) keys[i]->arg.v));
++		}
++		free((void *)keys[i]);
++	}
++	free(keys);
++	for (i = 0; i < n_buttons; i++) {
++		if (buttons[i]->func == spawn) {
++			int j = 0;
++			while (((char **) buttons[i]->arg.v)[j] != NULL) {
++				free(((char **) buttons[i]->arg.v)[j]);
++				j++;
++			}
++			free(((char **) buttons[i]->arg.v));
++		}
++		free((void *)buttons[i]);
++	}
++	free(buttons);
+ 	XDestroyWindow(dpy, wmcheckwin);
+ 	drw_free(drw);
+ 	XSync(dpy, False);
+@@ -589,7 +637,7 @@ configurerequest(XEvent *e)
+ 	if ((c = wintoclient(ev->window))) {
+ 		if (ev->value_mask & CWBorderWidth)
+ 			c->bw = ev->border_width;
+-		else if (c->isfloating || !selmon->lt[selmon->sellt]->arrange) {
++		else if (c->isfloating || !(*selmon->lt[selmon->sellt])->arrange) {
+ 			m = c->mon;
+ 			if (ev->value_mask & CWX) {
+ 				c->oldx = c->x;
+@@ -642,8 +690,8 @@ createmon(void)
+ 	m->showbar = showbar;
+ 	m->topbar = topbar;
+ 	m->lt[0] = &layouts[0];
+-	m->lt[1] = &layouts[1 % LENGTH(layouts)];
+-	strncpy(m->ltsymbol, layouts[0].symbol, sizeof m->ltsymbol);
++	m->lt[1] = &layouts[1 % n_layouts];
++	strncpy(m->ltsymbol, layouts[0]->symbol, sizeof m->ltsymbol);
+ 	return m;
+ }
+ 
+@@ -720,7 +768,7 @@ drawbar(Monitor *m)
+ 			urg |= c->tags;
+ 	}
+ 	x = 0;
+-	for (i = 0; i < LENGTH(tags); i++) {
++	for (i = 0; i < n_tags; i++) {
+ 		w = TEXTW(tags[i]);
+ 		drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSel : SchemeNorm]);
+ 		drw_text(drw, x, 0, w, bh, lrpad / 2, tags[i], urg & 1 << i);
+@@ -939,11 +987,11 @@ grabbuttons(Client *c, int focused)
+ 		if (!focused)
+ 			XGrabButton(dpy, AnyButton, AnyModifier, c->win, False,
+ 				BUTTONMASK, GrabModeSync, GrabModeSync, None, None);
+-		for (i = 0; i < LENGTH(buttons); i++)
+-			if (buttons[i].click == ClkClientWin)
++		for (i = 0; i < n_buttons; i++)
++			if (buttons[i]->click == ClkClientWin)
+ 				for (j = 0; j < LENGTH(modifiers); j++)
+-					XGrabButton(dpy, buttons[i].button,
+-						buttons[i].mask | modifiers[j],
++					XGrabButton(dpy, buttons[i]->button,
++						buttons[i]->mask | modifiers[j],
+ 						c->win, False, BUTTONMASK,
+ 						GrabModeAsync, GrabModeSync, None, None);
+ 	}
+@@ -965,12 +1013,12 @@ grabkeys(void)
+ 		if (!syms)
+ 			return;
+ 		for (k = start; k <= end; k++)
+-			for (i = 0; i < LENGTH(keys); i++)
++			for (i = 0; i < n_keys; i++)
+ 				/* skip modifier codes, we do that ourselves */
+-				if (keys[i].keysym == syms[(k - start) * skip])
++				if (keys[i]->keysym == syms[(k - start) * skip])
+ 					for (j = 0; j < LENGTH(modifiers); j++)
+ 						XGrabKey(dpy, k,
+-							 keys[i].mod | modifiers[j],
++							 keys[i]->mod | modifiers[j],
+ 							 root, True,
+ 							 GrabModeAsync, GrabModeAsync);
+ 		XFree(syms);
+@@ -1005,11 +1053,11 @@ keypress(XEvent *e)
+ 
+ 	ev = &e->xkey;
+ 	keysym = XKeycodeToKeysym(dpy, (KeyCode)ev->keycode, 0);
+-	for (i = 0; i < LENGTH(keys); i++)
+-		if (keysym == keys[i].keysym
+-		&& CLEANMASK(keys[i].mod) == CLEANMASK(ev->state)
+-		&& keys[i].func)
+-			keys[i].func(&(keys[i].arg));
++	for (i = 0; i < n_keys; i++)
++		if (keysym == keys[i]->keysym
++		&& CLEANMASK(keys[i]->mod) == CLEANMASK(ev->state)
++		&& keys[i]->func)
++			keys[i]->func(&(keys[i]->arg));
+ }
+ 
+ void
+@@ -1186,10 +1234,10 @@ movemouse(const Arg *arg)
+ 				ny = selmon->wy;
+ 			else if (abs((selmon->wy + selmon->wh) - (ny + HEIGHT(c))) < snap)
+ 				ny = selmon->wy + selmon->wh - HEIGHT(c);
+-			if (!c->isfloating && selmon->lt[selmon->sellt]->arrange
++			if (!c->isfloating && (*selmon->lt[selmon->sellt])->arrange
+ 			&& (abs(nx - c->x) > snap || abs(ny - c->y) > snap))
+ 				togglefloating(NULL);
+-			if (!selmon->lt[selmon->sellt]->arrange || c->isfloating)
++			if (!(*selmon->lt[selmon->sellt])->arrange || c->isfloating)
+ 				resize(c, nx, ny, c->w, c->h, 1);
+ 			break;
+ 		}
+@@ -1335,11 +1383,11 @@ resizemouse(const Arg *arg)
+ 			if (c->mon->wx + nw >= selmon->wx && c->mon->wx + nw <= selmon->wx + selmon->ww
+ 			&& c->mon->wy + nh >= selmon->wy && c->mon->wy + nh <= selmon->wy + selmon->wh)
+ 			{
+-				if (!c->isfloating && selmon->lt[selmon->sellt]->arrange
++				if (!c->isfloating && (*selmon->lt[selmon->sellt])->arrange
+ 				&& (abs(nw - c->w) > snap || abs(nh - c->h) > snap))
+ 					togglefloating(NULL);
+ 			}
+-			if (!selmon->lt[selmon->sellt]->arrange || c->isfloating)
++			if (!(*selmon->lt[selmon->sellt])->arrange || c->isfloating)
+ 				resize(c, c->x, c->y, nw, nh, 1);
+ 			break;
+ 		}
+@@ -1364,9 +1412,9 @@ restack(Monitor *m)
+ 	drawbar(m);
+ 	if (!m->sel)
+ 		return;
+-	if (m->sel->isfloating || !m->lt[m->sellt]->arrange)
++	if (m->sel->isfloating || !(*m->lt[m->sellt])->arrange)
+ 		XRaiseWindow(dpy, m->sel->win);
+-	if (m->lt[m->sellt]->arrange) {
++	if ((*m->lt[m->sellt])->arrange) {
+ 		wc.stack_mode = Below;
+ 		wc.sibling = m->barwin;
+ 		for (c = m->stack; c; c = c->snext)
+@@ -1513,8 +1561,8 @@ setlayout(const Arg *arg)
+ 	if (!arg || !arg->v || arg->v != selmon->lt[selmon->sellt])
+ 		selmon->sellt ^= 1;
+ 	if (arg && arg->v)
+-		selmon->lt[selmon->sellt] = (Layout *)arg->v;
+-	strncpy(selmon->ltsymbol, selmon->lt[selmon->sellt]->symbol, sizeof selmon->ltsymbol);
++		selmon->lt[selmon->sellt] = (const Layout **)arg->v;
++	strncpy(selmon->ltsymbol, (*selmon->lt[selmon->sellt])->symbol, sizeof selmon->ltsymbol);
+ 	if (selmon->sel)
+ 		arrange(selmon);
+ 	else
+@@ -1527,7 +1575,7 @@ setmfact(const Arg *arg)
+ {
+ 	float f;
+ 
+-	if (!arg || !selmon->lt[selmon->sellt]->arrange)
++	if (!arg || !(*selmon->lt[selmon->sellt])->arrange)
+ 		return;
+ 	f = arg->f < 1.0 ? arg->f + selmon->mfact : arg->f - 1.0;
+ 	if (f < 0.05 || f > 0.95)
+@@ -1559,7 +1607,7 @@ setup(void)
+ 	sh = DisplayHeight(dpy, screen);
+ 	root = RootWindow(dpy, screen);
+ 	drw = drw_create(dpy, screen, root, sw, sh);
+-	if (!drw_fontset_create(drw, fonts, LENGTH(fonts)))
++	if (!drw_fontset_create(drw, fonts, n_fonts))
+ 		die("no fonts could be loaded.");
+ 	lrpad = drw->fonts->h;
+ 	bh = drw->fonts->h + 2;
+@@ -1634,7 +1682,7 @@ showhide(Client *c)
+ 	if (ISVISIBLE(c)) {
+ 		/* show clients top down */
+ 		XMoveWindow(dpy, c->win, c->x, c->y);
+-		if ((!c->mon->lt[c->mon->sellt]->arrange || c->isfloating) && !c->isfullscreen)
++		if ((!(*c->mon->lt[c->mon->sellt])->arrange || c->isfloating) && !c->isfullscreen)
+ 			resize(c, c->x, c->y, c->w, c->h, 0);
+ 		showhide(c->snext);
+ 	} else {
+@@ -1649,8 +1697,6 @@ spawn(const Arg *arg)
+ {
+ 	struct sigaction sa;
+ 
+-	if (arg->v == dmenucmd)
+-		dmenumon[0] = '0' + selmon->num;
+ 	if (fork() == 0) {
+ 		if (dpy)
+ 			close(ConnectionNumber(dpy));
+@@ -2133,7 +2179,7 @@ zoom(const Arg *arg)
+ {
+ 	Client *c = selmon->sel;
+ 
+-	if (!selmon->lt[selmon->sellt]->arrange || !c || c->isfloating)
++	if (!(*selmon->lt[selmon->sellt])->arrange || !c || c->isfloating)
+ 		return;
+ 	if (c == nexttiled(selmon->clients) && !(c = nexttiled(c->next)))
+ 		return;
+@@ -2152,6 +2198,7 @@ main(int argc, char *argv[])
+ 	if (!(dpy = XOpenDisplay(NULL)))
+ 		die("dwm: cannot open display");
+ 	checkotherwm();
++	read_cfgfile();
+ 	setup();
+ #ifdef __OpenBSD__
+ 	if (pledge("stdio rpath proc exec", NULL) == -1)
+diff --git a/dwm.toml b/dwm.toml
+new file mode 100644
+index 0000000..56e0f73
+--- /dev/null
++++ b/dwm.toml
+@@ -0,0 +1,103 @@
++# border pixel of windows
++borderpx = 2
++
++# snap pixel
++snap = 32
++
++# 0 means no bar
++showbar = 1
++
++# 0 means bottom bar
++topbar = 1
++
++# font array
++fonts = [ "monospace:size=10" ]
++
++# colors
++SchemeNorm.ColFg = "#bbbbbb"
++SchemeNorm.ColBg = "#222222"
++SchemeNorm.Border = "#444444"
++SchemeSel.ColFg = "#eeeeee"
++SchemeSel.ColBg = "#005577"
++SchemeSel.Border = "#005577"
++
++# tagging
++tags = [ "1", "2", "3", "4", "5", "6", "7", "8", "9" ]
++
++# valid properties: class, instance, title, tag, isfloating, monitor
++rules = [ { class = "GIMP", isfloating = 1 },
++          { class = "Firefox", tag = 8 } ]
++
++# layouts
++
++# factor of master area size [0.05..0.95]
++mfact = 0.55
++
++# number of clients in master area
++nmaster = 1
++
++# 1 means respect size hints in tiled resizals
++resizehints = 1
++
++# 1 will force focus on the fullscreen window
++lockfullscreen = 1
++
++layouts = [ { symbol = "[]=",     arrange = "tile" },
++            { symbol = "><>",     arrange = "NULL" },
++            { symbol = "[M]",     arrange = "monocle" } ]
++
++# key definitions
++# valid keys: super, alt, ctrl, shift
++keys = [ { modifier = [ "alt" ],            key = "p",       function = "spawn",          argument = [ "dmenu_run", "-fn", "monospace:size=10" ] },
++         { modifier = [ "alt", "shift" ],   key = "Return",  function = "spawn",          argument = [ "st" ] },
++         { modifier = [ "alt" ],            key = "b",       function = "togglebar",      argument = { } },
++         { modifier = [ "alt" ],            key = "j",       function = "focusstack",     argument = 1 },
++         { modifier = [ "alt" ],            key = "k",       function = "focusstack",     argument = -1 },
++         { modifier = [ "alt" ],            key = "i",       function = "incnmaster",     argument = 1 },
++         { modifier = [ "alt" ],            key = "d",       function = "incnmaster",     argument = -1 },
++         { modifier = [ "alt" ],            key = "h",       function = "setmfact",       argument = -0.05 },
++         { modifier = [ "alt" ],            key = "l",       function = "setmfact",       argument = 0.05 },
++         { modifier = [ "alt" ],            key = "Return",  function = "zoom",           argument = { } },
++         { modifier = [ "alt" ],            key = "Tab",     function = "view",           argument = { } },
++         { modifier = [ "alt", "shift" ],   key = "c",       function = "killclient",     argument = { } },
++         { modifier = [ "alt" ],            key = "t",       function = "setlayout",      argument = 0 },
++         { modifier = [ "alt" ],            key = "f",       function = "setlayout",      argument = 1 },
++         { modifier = [ "alt" ],            key = "m",       function = "setlayout",      argument = 2 },
++         { modifier = [ "alt" ],            key = "space",   function = "setlayout",      argument = { } },
++         { modifier = [ "alt", "shift" ],   key = "space",   function = "togglefloating", argument = { } },
++         { modifier = [ "alt" ],            key = "0",       function = "view",           argument = -1 },
++         { modifier = [ "alt", "shift" ],   key = "0",       function = "tag",            argument = -1 },
++         { modifier = [ "alt" ],            key = "comma",   function = "focusmon",       argument = -1 },
++         { modifier = [ "alt" ],            key = "period",  function = "focusmon",       argument = 1 },
++         { modifier = [ "alt", "shift" ],   key = "comma",   function = "tagmon",         argument = -1 },
++         { modifier = [ "alt", "shift" ],   key = "period",  function = "tagmon",         argument = 1 },
++         { modifier = [ "alt", "shift" ],   key = "q",       function = "quit",           argument = { } } ]
++
++tagkey = [ { modifier = [ "alt" ],                    function = "view" },
++           { modifier = [ "alt", "ctrl" ],            function = "toggleview" },
++           { modifier = [ "alt", "shift" ],           function = "tag" },
++           { modifier = [ "alt", "shift", "ctrl" ],   function = "toggletag" } ]
++
++tagkeys = [ { key = "1", tag = 0 },
++            { key = "2", tag = 1 },
++            { key = "3", tag = 2 },
++            { key = "4", tag = 3 },
++            { key = "5", tag = 4 },
++            { key = "6", tag = 5 },
++            { key = "7", tag = 6 },
++            { key = "8", tag = 7 },
++            { key = "9", tag = 8 } ]
++
++# button definitions
++# click can be ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle, ClkClientWin, or ClkRootWin
++buttons = [ { click = "ClkLtSymbol",    mask = 0,       button = "button1",   function = "setlayout",       argument = { } },
++            { click = "ClkLtsymbol",    mask = 0,       button = "button3",   function = "setlayout",       argument = 2 },
++            { click = "ClkWinTitle",    mask = 0,       button = "button2",   function = "quit",            argument = { } },
++            { click = "ClkStatusText",  mask = 0,       button = "button2",   function = "spawn",           argument = [ "st" ] },
++            { click = "ClkClientWin",   mask = "alt",   button = "button1",   function = "movemouse",       argument = { } },
++            { click = "ClkClientWin",   mask = "alt",   button = "button2",   function = "togglefloating",  argument = { } },
++            { click = "ClkClientWin",   mask = "alt",   button = "button3",   function = "resizemouse",     argument = { } },
++            { click = "ClkTagBar",      mask = 0,       button = "button1",   function = "view",            argument = { } },
++            { click = "ClkTagBar",      mask = 0,       button = "button3",   function = "toggleview",      argument = { } },
++            { click = "ClkTagBar",      mask = "alt",   button = "button1",   function = "tag",             argument = { } },
++            { click = "ClkTagBar",      mask = "alt",   button = "button3",   function = "toggletag",       argument = { } } ]
+diff --git a/tomlc99 b/tomlc99
+new file mode 160000
+index 0000000..5221b3d
+--- /dev/null
++++ b/tomlc99
+@@ -0,0 +1 @@
++Subproject commit 5221b3d3d66c25a1dc6f0372b4f824f1202fe398
