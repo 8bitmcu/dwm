@@ -31,7 +31,7 @@ alt + Return
 alt + Tab
   dwmc view
 
-alt + shift + c 
+alt + shift + c
   dwmc killclient
 
 alt + t

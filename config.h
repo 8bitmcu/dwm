@@ -12,6 +12,9 @@ static const Key **keys;
 static const Button **buttons;
 static int n_fonts, n_tags, n_rules, n_layouts, n_keys, n_buttons;
 
+static int systraypinning, systrayonleft, systrayspacing, systraypinningfailfirst, showsystray;
+
+
 static int
 cfg_read_str(toml_table_t *conf, char *key, const char **dest)
 {
@@ -177,6 +180,11 @@ read_cfgfile()
 			cfg_read_int(conf, "nmaster", &nmaster);
 			cfg_read_int(conf, "resizehints", &resizehints);
 			cfg_read_int(conf, "lockfullscreen", &lockfullscreen);
+			cfg_read_int(conf, "showsystray", &showsystray);
+			cfg_read_int(conf, "systraypinning", &systraypinning);
+			cfg_read_int(conf, "systrayonleft", &systrayonleft);
+			cfg_read_int(conf, "systrayspacing", &systrayspacing);
+			cfg_read_int(conf, "systraypinningfailfirst", &systraypinningfailfirst);
 			cfg_read_float(conf, "mfact", &mfact);
 			n_fonts = cfg_read_strarr(conf, "fonts", &fonts, 0);
 			n_tags = cfg_read_strarr(conf, "tags", &tags, 0);
