@@ -25,8 +25,62 @@ alt + h
 alt + l
   dwmc setmfact 0.05
 
+alt + shift + h
+  dwmc setcfact 0.25
+
+alt + shift + l
+  dwmc setcfact -0.25
+
 alt + Return
   dwmc zoom
+
+alt + z
+  dwmc incrgaps 1
+
+alt + shift + z
+  dwmc incrgaps -1
+
+alt + x
+  dwmc incrigaps u
+
+alt + shift + x
+  dwmc incrigaps -1
+
+alt + v
+  dwmc incrogaps 1
+
+alt + shift + v
+  dwmc incrogaps -1
+
+alt + n
+  dwmc incrihgaps 1
+
+alt + shift + n
+  dwmc incrihgaps -1
+
+alt + m
+  dwmc incrivgaps 1
+
+alt + shift + m
+  dwmc incrivgaps -1
+
+alt + y
+  dwmc incrohgaps 1
+
+alt + shift + u
+  dwmc incrohgaps -1
+
+alt + u
+  dwmc incrovgaps 1
+
+alt + shift + u
+  dwmc incrovgaps -1
+
+alt + o
+  dwmc togglegaps
+
+alt + shift + o
+  dwmc defaultgaps
 
 alt + Tab
   dwmc view

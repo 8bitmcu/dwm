@@ -5,8 +5,10 @@ A bloated fork of suckless [dwm](https://dwm.suckless.org/) with lots of customi
 
 This fork merges the following patches: 
 
+- [dwm-alpha](https://dwm.suckless.org/patches/alpha): Allow dwm to have translucent bars, while keeping all the text on it opaque
+- [dwm-cfacts-vanitygaps](https://dwm.suckless.org/patches/vanitygaps): adds gaps between client windows and gaps between windows and the screen edge in a flexible manner.
 - [dwm-dwmc](https://dwm.suckless.org/patches/dwmc): Simple dwmc client using a fork of fsignal to communicate with dwm.
-- [dwm-systray](https://dwm.suckless.org/patches/systray/): A simple system tray implementation.
+- [dwm-systray](https://dwm.suckless.org/patches/systray): A simple system tray implementation.
 
 And adds the following other changes:
 - **configuration file**; loads configuration from `$XDG_CONFIG_HOME/dwm/dwm.toml`. This file must exists.

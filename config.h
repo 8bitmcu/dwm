@@ -3,7 +3,6 @@ static const char *dwm_cfg = "/dwm/dwm.toml";
 
 static int borderpx, snap, showbar, topbar;
 static const char *colors[SchemeLast][ColLast];
-static unsigned int alphas[SchemeLast][3];
 static float mfact;
 static int nmaster, resizehints, lockfullscreen;
 static const char **fonts, **tags;
@@ -12,7 +11,13 @@ static const Layout **layouts;
 static const Key **keys;
 static const Button **buttons;
 static int n_fonts, n_tags, n_rules, n_layouts, n_keys, n_buttons;
-static int systraypinning, systrayonleft, systrayspacing, systraypinningfailfirst, showsystray;
+
+static unsigned int alphas[SchemeLast][3]; /* dwm-alpha */
+static int systraypinning, systrayonleft, systrayspacing, systraypinningfailfirst, showsystray; /* dwm-systray */
+static unsigned int gappih, gappiv, gappoh, gappov, smartgaps; /* dwm-vanitygaps */
+
+#define FORCE_VSPLIT 1  /* nrowgrid layout: force two clients to always split vertically */
+#include "vanitygaps.c"
 
 static int
 cfg_read_str(toml_table_t *conf, char *key, const char **dest)
@@ -176,6 +181,11 @@ read_cfgfile()
 			cfg_read_int(conf, "snap", &snap);
 			cfg_read_int(conf, "showbar", &showbar);
 			cfg_read_int(conf, "topbar", &topbar);
+			cfg_read_int(conf, "gappih", (int *) &gappih);
+			cfg_read_int(conf, "gappiv", (int *) &gappiv);
+			cfg_read_int(conf, "gappoh", (int *) &gappoh);
+			cfg_read_int(conf, "gappov", (int *) &gappov);
+			cfg_read_int(conf, "smartgaps", (int *) &smartgaps);
 			cfg_read_int(conf, "nmaster", &nmaster);
 			cfg_read_int(conf, "resizehints", &resizehints);
 			cfg_read_int(conf, "lockfullscreen", &lockfullscreen);
@@ -230,6 +240,30 @@ read_cfgfile()
 					l->arrange = tile;
 				else if (!strcmp(field, "monocle"))
 					l->arrange = monocle;
+				else if (!strcmp(field, "spiral"))
+					l->arrange = spiral;
+				else if (!strcmp(field, "dwindle"))
+					l->arrange = dwindle;
+				else if (!strcmp(field, "deck"))
+					l->arrange = deck;
+				else if (!strcmp(field, "bstack"))
+					l->arrange = bstack;
+				else if (!strcmp(field, "bstackhoriz"))
+					l->arrange = bstackhoriz;
+				else if (!strcmp(field, "grid"))
+					l->arrange = grid;
+				else if (!strcmp(field, "nrowgrid"))
+					l->arrange = nrowgrid;
+				else if (!strcmp(field, "horizgrid"))
+					l->arrange = horizgrid;
+				else if (!strcmp(field, "gaplessgrid"))
+					l->arrange = gaplessgrid;
+				else if (!strcmp(field, "centeredmaster"))
+					l->arrange = centeredmaster;
+				else if (!strcmp(field, "centeredfloatingmaster"))
+					l->arrange = centeredfloatingmaster;
+				else if (!strcmp(field, "nrowgrid"))
+					l->arrange = nrowgrid;
 				else
 					l->arrange = NULL;
 				layouts[i] = l;
@@ -335,10 +369,19 @@ tagall(const Arg *arg)
 /* trigger signals using `xsetroot -name "fsignal:<signame> [<type> <value>]"` */
 static Signal signals[] = {
 	/* signum           function */
+	{ "defaultgaps",    defaultgaps },
 	{ "focusstack",     focusstack },
 	{ "setmfact",       setmfact },
+	{ "setcfact",       setcfact },
 	{ "togglebar",      togglebar },
 	{ "incnmaster",     incnmaster },
+	{ "incrgaps",       incrgaps },
+	{ "incrigaps",      incrigaps },
+	{ "incrogaps",      incrogaps },
+	{ "incrivgaps",     incrivgaps },
+	{ "incrihgaps",     incrihgaps },
+	{ "incrovgaps",     incrovgaps },
+	{ "incrohgaps",     incrohgaps },
 	{ "togglefloating", togglefloating },
 	{ "focusmon",       focusmon },
 	{ "tagmon",         tagmon },
@@ -351,6 +394,7 @@ static Signal signals[] = {
 	{ "tag",            tag },
 	{ "tagall",         tagall },
 	{ "tagex",          tagex },
+	{ "togglegaps",     togglegaps },
 	{ "toggletag",      tag },
 	{ "toggletagex",    toggletagex },
 	{ "killclient",     killclient },

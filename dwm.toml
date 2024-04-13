@@ -4,6 +4,29 @@ borderpx = 2
 # snap pixel
 snap = 32
 
+# horizontal inner gap between windows
+gappih = 20
+
+# vertical inner gap between windows
+gappiv = 10
+
+# horizontal outer gap between windows and screen edge
+gappoh = 10
+
+# vertical outer gap between windows and screen edge
+gappov = 30
+
+# 1 means no outer gap when there is only one window
+smartgaps = 0
+
+
+#######
+# BAR #
+#######
+
+# font array
+fonts = [ "monospace:size=10" ]
+
 # 0 means no bar
 showbar = 1
 
@@ -25,9 +48,6 @@ systrayspacing = 2
 # 1: if pinning fails, display systray on the first monitor, 0: display systray on the last monitor
 systraypinningfailfirst = 1
 
-# font array
-fonts = [ "monospace:size=10" ]
-
 # colors
 SchemeNorm.ColFg = "#bbbbbb"
 SchemeNorm.ColBg = "#222222"
@@ -43,14 +63,24 @@ SchemeSel.FgAlpha = 255
 SchemeSel.BgAlpha = 208
 SchemeSel.BorderAlpha = 255
 
-# tagging
+
+###########
+# tagging #
+###########
+
 tags = [ "1", "2", "3", "4", "5", "6", "7", "8", "9" ]
+
+#########
+# rules #
+#########
 
 # valid properties: class, instance, title, tag, isfloating, monitor
 rules = [ { class = "GIMP", isfloating = 1 },
           { class = "Firefox", tag = 8 } ]
 
-# layouts
+###########
+# layouts #
+###########
 
 # factor of master area size [0.05..0.95]
 mfact = 0.55
@@ -65,10 +95,26 @@ resizehints = 1
 lockfullscreen = 1
 
 layouts = [ { symbol = "[]=",     arrange = "tile" },
-            { symbol = "><>",     arrange = "NULL" },
-            { symbol = "[M]",     arrange = "monocle" } ]
+            { symbol = "[M]",     arrange = "monocle" },
+            { symbol = "[@]",     arrange = "spiral" },
+            { symbol = "[\\]",    arrange = "dwindle" },
+            { symbol = "H[]",     arrange = "deck" },
+            { symbol = "TTT",     arrange = "bstack" },
+            { symbol = "===",     arrange = "bstackhoriz" },
+            { symbol = "HHH",     arrange = "grid" },
+            { symbol = "###",     arrange = "nrowgrid" },
+            { symbol = "---",     arrange = "horizgrid" },
+            { symbol = ":::",     arrange = "gaplessgrid" },
+            { symbol = "|M|",     arrange = "centeredmaster" },
+            { symbol = ">M>",     arrange = "centeredfloatingmaster" },
+            { symbol = "><>",     arrange = "NULL" } ]
 
-# see sxhkd / sxhkdrc for keybinds
+
+############
+# bindings #
+############
+
+# see sxhkd / sxhkdrc for key bindings
 
 # button definitions
 # click can be ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle, ClkClientWin, or ClkRootWin
