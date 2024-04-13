@@ -225,35 +225,6 @@ read_cfgfile()
 				layouts[i] = l;
 				free((void *)field);
 			}
-			/* keys */
-			d = toml_array_in(conf, "keys");
-			n_keys = toml_array_nelem(d);
-			toml_array_t *tagkeys = toml_array_in(conf, "tagkeys");
-			toml_array_t *tagkey = toml_array_in(conf, "tagkey");
-			int n_tagkeys = toml_array_nelem(tagkeys);
-			int n_tagkey = toml_array_nelem(tagkey);
-			keys = ecalloc(((n_tagkey * n_tagkeys) + n_keys), sizeof(Key));
-			for (int i = 0; i < n_keys; i++) {
-				toml_table_t *tbl = toml_table_at(d, i);
-				Key *k = ecalloc(1, sizeof(Key));
-				k->mod = parse_modifier(tbl, "modifier");
-				k->keysym = parse_keysym(tbl, "key");
-				parse_functionargs(tbl, &k->func, &k->arg);
-				keys[i] = k;
-			}
-			/* tag keys */
-			for (int i = 0; i < n_tagkeys; i++) {
-				toml_table_t *tks = toml_table_at(tagkeys, i);
-				for (int j = 0; j < n_tagkey; j++) {
-					toml_table_t *tk = toml_table_at(tagkey, j);
-					Key *k = ecalloc(1, sizeof(Key));
-					k->mod = parse_modifier(tk, "modifier");
-					k->keysym = parse_keysym(tks, "key");
-					parse_functionargs(tk, &k->func, &k->arg);
-					parse_tag(tks, "tag", (int *)&k->arg.ui);
-					keys[n_keys++] = k;
-				}
-			}
 			/* buttons */
 			d = toml_array_in(conf, "buttons");
 			n_buttons = toml_array_nelem(d);
@@ -305,3 +276,76 @@ read_cfgfile()
 		fprintf(stderr, errbuf);
 	}
 }
+
+
+void
+setlayoutex(const Arg *arg)
+{
+	setlayout(&((Arg) { .v = &layouts[arg->i] }));
+}
+
+void
+viewex(const Arg *arg)
+{
+	view(&((Arg) { .ui = 1 << arg->ui }));
+}
+
+void
+viewall(const Arg *arg)
+{
+	view(&((Arg){.ui = ~0}));
+}
+
+void
+toggleviewex(const Arg *arg)
+{
+	toggleview(&((Arg) { .ui = 1 << arg->ui }));
+}
+
+void
+tagex(const Arg *arg)
+{
+	tag(&((Arg) { .ui = 1 << arg->ui }));
+}
+
+void
+toggletagex(const Arg *arg)
+{
+	toggletag(&((Arg) { .ui = 1 << arg->ui }));
+}
+
+void
+tagall(const Arg *arg)
+{
+	tag(&((Arg){.ui = ~0}));
+}
+
+/* signal definitions */
+/* signum must be greater than 0 */
+/* trigger signals using `xsetroot -name "fsignal:<signame> [<type> <value>]"` */
+static Signal signals[] = {
+	/* signum           function */
+	{ "focusstack",     focusstack },
+	{ "setmfact",       setmfact },
+	{ "togglebar",      togglebar },
+	{ "incnmaster",     incnmaster },
+	{ "togglefloating", togglefloating },
+	{ "focusmon",       focusmon },
+	{ "tagmon",         tagmon },
+	{ "zoom",           zoom },
+	{ "view",           view },
+	{ "viewall",        viewall },
+	{ "viewex",         viewex },
+	{ "toggleview",     view },
+	{ "toggleviewex",   toggleviewex },
+	{ "tag",            tag },
+	{ "tagall",         tagall },
+	{ "tagex",          tagex },
+	{ "toggletag",      tag },
+	{ "toggletagex",    toggletagex },
+	{ "killclient",     killclient },
+	{ "quit",           quit },
+	{ "setlayout",      setlayout },
+	{ "setlayoutex",    setlayoutex },
+};
+

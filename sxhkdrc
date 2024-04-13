@@ -1,0 +1,74 @@
+alt + p
+  dmenu_run
+
+alt + shift + Return
+  st
+
+alt + b
+  dwmc togglebar
+
+alt + j
+  dwmc focusstack 1
+
+alt + k
+  dwmc focusstack -1
+
+alt + i
+  dwmc incnmaster 1
+
+alt + d
+  dwmc incnmaster -1
+
+alt + h
+  dwmc setmfact -0.05
+
+alt + l
+  dwmc setmfact 0.05
+
+alt + Return
+  dwmc zoom
+
+alt + Tab
+  dwmc view
+
+alt + shift + c 
+  dwmc killclient
+
+alt + t
+  dwmc setlayoutex 0
+
+alt + f
+  dwmc setlayoutex 1
+
+alt + m
+  dwmc setlayoutex 2
+
+alt + space
+  dwmc setlayout
+
+alt + shift + space
+  dwmc togglefloating
+
+alt + 0
+  dwmc viewall
+
+alt + shift + 0
+  dwmc tagall
+
+alt + comma
+  dwmc focusmon -1
+
+alt + period
+  dwmc focusmon 1
+
+alt + shift + comma
+  dwmc tagmon -1
+
+alt + shift + period
+  dwmc tagmon 1
+
+alt + shift + q
+  dwmc quit
+
+alt + {_,ctrl +}{_,shift +} {1-9}
+	dwmc {_,toggle}{viewex,tagex} {0-8}
