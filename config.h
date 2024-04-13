@@ -3,6 +3,7 @@ static const char *dwm_cfg = "/dwm/dwm.toml";
 
 static int borderpx, snap, showbar, topbar;
 static const char *colors[SchemeLast][ColLast];
+static unsigned int alphas[SchemeLast][3];
 static float mfact;
 static int nmaster, resizehints, lockfullscreen;
 static const char **fonts, **tags;
@@ -11,9 +12,7 @@ static const Layout **layouts;
 static const Key **keys;
 static const Button **buttons;
 static int n_fonts, n_tags, n_rules, n_layouts, n_keys, n_buttons;
-
 static int systraypinning, systrayonleft, systrayspacing, systraypinningfailfirst, showsystray;
-
 
 static int
 cfg_read_str(toml_table_t *conf, char *key, const char **dest)
@@ -194,6 +193,9 @@ read_cfgfile()
 				cfg_read_str(tbl, "ColFg", &colors[j][ColFg]);
 				cfg_read_str(tbl, "ColBg", &colors[j][ColBg]);
 				cfg_read_str(tbl, "Border", &colors[j][ColBorder]);
+				cfg_read_int(tbl, "FgAlpha", (int *) &alphas[j][0]);
+				cfg_read_int(tbl, "BgAlpha", (int *) &alphas[j][1]);
+				cfg_read_int(tbl, "BorderAlpha", (int *) &alphas[j][2]);
 			}
 			/* rules */
 			toml_array_t *d = toml_array_in(conf, "rules");

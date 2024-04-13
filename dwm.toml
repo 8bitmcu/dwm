@@ -32,9 +32,16 @@ fonts = [ "monospace:size=10" ]
 SchemeNorm.ColFg = "#bbbbbb"
 SchemeNorm.ColBg = "#222222"
 SchemeNorm.Border = "#444444"
+SchemeNorm.FgAlpha = 255
+SchemeNorm.BgAlpha = 208
+SchemeNorm.BorderAlpha = 255
+
 SchemeSel.ColFg = "#eeeeee"
 SchemeSel.ColBg = "#005577"
 SchemeSel.Border = "#005577"
+SchemeSel.FgAlpha = 255
+SchemeSel.BgAlpha = 208
+SchemeSel.BorderAlpha = 255
 
 # tagging
 tags = [ "1", "2", "3", "4", "5", "6", "7", "8", "9" ]
