@@ -79,6 +79,9 @@ alt + Return
 alt + s
   dwmc togglesticky
 
+alt + shift + f
+  dwmc togglefullscreen
+
 alt + v
   dwmc incrogaps 1
 

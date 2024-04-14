@@ -5,6 +5,7 @@ A bloated fork of suckless [dwm](https://dwm.suckless.org/) with lots of customi
 
 This fork merges the following patches: 
 
+- [dwm-actualfullscreen](https://dwm.suckless.org/patches/actualfullscreen): Toggle fullscreen for a window.
 - [dwm-alpha](https://dwm.suckless.org/patches/alpha): Allow dwm to have translucent bars, while keeping all the text on it opaque.
 - [dwm-center](https://dwm.suckless.org/patches/center): Add an iscentered rule to automatically center clients on the current monitor.
 - [dwm-cfacts-vanitygaps](https://dwm.suckless.org/patches/vanitygaps): Adds gaps between client windows and gaps between windows and the screen edge.

@@ -450,6 +450,7 @@ static Signal signals[] = {
 	{ "togglegaps",       togglegaps },
 	{ "toggletag",        tag },
 	{ "togglesticky",     togglesticky },
+	{ "togglefullscreen", togglefullscreen },
 	{ "toggletagex",      toggletagex },
 	{ "killclient",       killclient },
 	{ "quit",             quit },
