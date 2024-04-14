@@ -149,6 +149,13 @@ typedef struct {
 	void (*arrange)(Monitor *);
 } Layout;
 
+typedef struct {
+	int x;
+	int y;
+	int w;
+	int h;
+} Inset;
+
 struct Monitor {
 	char ltsymbol[16];
 	float mfact;
@@ -172,6 +179,7 @@ struct Monitor {
 	Monitor *next;
 	Window barwin;
 	const Layout **lt[2];
+	Inset inset;
 };
 
 typedef struct {
@@ -259,6 +267,8 @@ static void setclientstate(Client *c, long state);
 static void setclienttagprop(Client *c);
 static void setfocus(Client *c);
 static void setfullscreen(Client *c, int fullscreen);
+static void setinset(Monitor *m, Inset inset);
+static void updateinset(const Arg *arg);
 static void setlayout(const Arg *arg);
 static void setsticky(Client *c, int sticky);
 static void setcfact(const Arg *arg);
@@ -907,6 +917,7 @@ createmon(void)
 	m->lt[0] = &layouts[0];
 	m->lt[1] = &layouts[1 % n_layouts];
 	strncpy(m->ltsymbol, layouts[0]->symbol, sizeof m->ltsymbol);
+	m->inset = default_inset;
 	return m;
 }
 
@@ -1966,6 +1977,23 @@ setfullscreen(Client *c, int fullscreen)
 }
 
 void
+setinset(Monitor *m, Inset inset)
+{
+	m->inset = inset;
+	updatebarpos(m);
+	arrange(m);
+}
+
+void
+updateinset(const Arg *arg)
+{
+	Inset *inset = (Inset *)arg->v;
+
+	for (Monitor *m = mons; m; m = m->next)
+		setinset(m, *inset);
+}
+
+void
 setlayout(const Arg *arg)
 {
 	if (!arg || !arg->v || arg->v != selmon->lt[selmon->sellt])
@@ -2428,6 +2456,13 @@ updatebarpos(Monitor *m)
 		m->wy = m->topbar ? m->wy + bh : m->wy;
 	} else
 		m->by = -bh;
+
+	// Custom insets
+	Inset inset = m->inset;
+	m->wx += inset.x;
+	m->wy += inset.y;
+	m->ww -= inset.w + inset.x;
+	m->wh -= inset.h + inset.y;
 }
 
 void

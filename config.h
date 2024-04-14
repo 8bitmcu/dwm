@@ -16,7 +16,8 @@ static unsigned int alphas[SchemeLast][3]; /* dwm-alpha */
 static int systraypinning, systrayonleft, systrayspacing, systraypinningfailfirst, showsystray; /* dwm-systray */
 static unsigned int gappih, gappiv, gappoh, gappov, smartgaps; /* dwm-vanitygaps */
 static int enableswallow, swallowfloating; /* dwm-swallow */
-static int enablehidevacant; /* dwm_hide_vacant_tags */
+static int enablehidevacant; /* dwm-hide_vacant_tags */
+static Inset default_inset; /* dwm-insets */
 
 #define FORCE_VSPLIT 1  /* nrowgrid layout: force two clients to always split vertically */
 #include "vanitygaps.c"
@@ -200,6 +201,11 @@ read_cfgfile()
 			cfg_read_int(conf, "swallowfloating", &swallowfloating);
 			cfg_read_int(conf, "enablehidevacant", &enablehidevacant);
 			cfg_read_float(conf, "mfact", &mfact);
+			toml_table_t *tbl = toml_table_in(conf, "default_inset");
+			cfg_read_int(tbl, "x", (int *) &default_inset.x);
+			cfg_read_int(tbl, "y", (int *) &default_inset.y);
+			cfg_read_int(tbl, "w", (int *) &default_inset.w);
+			cfg_read_int(tbl, "h", (int *) &default_inset.h);
 			n_fonts = cfg_read_strarr(conf, "fonts", &fonts, 0);
 			n_tags = cfg_read_strarr(conf, "tags", &tags, 0);
 			/* color table */
@@ -409,6 +415,35 @@ pushstack_prev(const Arg *arg)
 	pushstack(&((Arg) { .i = PREVSEL }));
 }
 
+void
+updateinset_x(const Arg *arg)
+{
+  default_inset.x = arg->i;
+	updateinset(&((Arg) { .v = (void *) &default_inset }));
+}
+
+void
+updateinset_y(const Arg *arg)
+{
+  default_inset.y = arg->i;
+	updateinset(&((Arg) { .v = (void *) &default_inset }));
+}
+
+void
+updateinset_w(const Arg *arg)
+{
+  default_inset.w = arg->i;
+	updateinset(&((Arg) { .v = (void *) &default_inset }));
+}
+
+void
+updateinset_h(const Arg *arg)
+{
+  default_inset.h = arg->i;
+	updateinset(&((Arg) { .v = (void *) &default_inset }));
+}
+
+
 /* signal definitions */
 /* signum must be greater than 0 */
 /* trigger signals using `xsetroot -name "fsignal:<signame> [<type> <value>]"` */
@@ -456,5 +491,9 @@ static Signal signals[] = {
 	{ "quit",             quit },
 	{ "setlayout",        setlayout },
 	{ "setlayoutex",      setlayoutex },
+	{ "updateinset_x",    updateinset_x },
+	{ "updateinset_y",    updateinset_y },
+	{ "updateinset_w",    updateinset_w },
+	{ "updateinset_h",    updateinset_h }
 };
 
