@@ -7,10 +7,12 @@ This fork merges the following patches:
 
 - [dwm-actualfullscreen](https://dwm.suckless.org/patches/actualfullscreen): Toggle fullscreen for a window.
 - [dwm-alpha](https://dwm.suckless.org/patches/alpha): Allow dwm to have translucent bars, while keeping all the text on it opaque.
+- [dwm-autostart](https://dwm.suckless.org/patches/autostart): Make dwm run `autostart_blocking` and `autostart &` before entering the handler loop.
 - [dwm-center](https://dwm.suckless.org/patches/center): Add an iscentered rule to automatically center clients on the current monitor.
 - [dwm-cfacts-vanitygaps](https://dwm.suckless.org/patches/vanitygaps): Adds gaps between client windows and gaps between windows and the screen edge.
 - [dwm-dwmc](https://dwm.suckless.org/patches/dwmc): Simple dwmc client using a fork of fsignal to communicate with dwm.
 - [dwm-hide_vacant_tags](https://dwm.suckless.org/patches/hide_vacant_tags): Prevents dwm from drawing tags with no clients on the bar.
+- [dwm-insets](https://dwm.suckless.org/patches/insets): Defines custom insets from each edge of the screen.
 - [dwm-preserveonrestart](https://dwm.suckless.org/patches/preserveonrestart): Preserve client tags on restarting dwm.
 - [dwm-shiftview](https://dwm.suckless.org/patches/nextprev): Increment or decrement the selected tag.
 - [dwm-stacker](https://dwm.suckless.org/patches/stacker): Provides comprehensive utilities for managing the client stack.

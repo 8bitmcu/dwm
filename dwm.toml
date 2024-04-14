@@ -1,3 +1,10 @@
+
+# run autostart asynchronously of the handler loop. Path is relative to $HOME
+autostart = "/.config/dwm/autostart.sh"
+
+# run autostart_blocking before entering the handler loop. Path is relative to $HOME
+autostart_blocking = ""
+
 # border pixel of windows
 borderpx = 2
 

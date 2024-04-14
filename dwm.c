@@ -29,6 +29,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <sys/wait.h>
 #include <X11/cursorfont.h>
 #include <X11/keysym.h>
@@ -260,6 +261,7 @@ static void resizemouse(const Arg *arg);
 static void resizerequest(XEvent *e);
 static void restack(Monitor *m);
 static void run(void);
+static void runautostart(void);
 static void scan(void);
 static int sendevent(Window w, Atom proto, int m, long d0, long d1, long d2, long d3, long d4);
 static void sendmon(Client *c, Monitor *m);
@@ -1841,6 +1843,21 @@ run(void)
 }
 
 void
+runautostart(void)
+{
+	char *path = strcat(getenv("HOME"), autostart_blocking);
+	if (strlen(autostart_blocking) > 0 && access(path, X_OK) == 0)
+		system(path);
+
+	char *path2 = strcat(getenv("HOME"), autostart);
+	if (strlen(autostart) > 0 && access(path2, X_OK) == 0)
+		system(strcat(path2, " &"));
+
+	free((void *) autostart);
+	free((void *) autostart_blocking);
+}
+
+void
 scan(void)
 {
 	unsigned int i, num;
@@ -3092,6 +3109,7 @@ main(int argc, char *argv[])
 		die("pledge");
 #endif /* __OpenBSD__ */
 	scan();
+	runautostart();
 	run();
 	cleanup();
 	XCloseDisplay(dpy);

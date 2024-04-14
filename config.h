@@ -18,7 +18,7 @@ static unsigned int gappih, gappiv, gappoh, gappov, smartgaps; /* dwm-vanitygaps
 static int enableswallow, swallowfloating; /* dwm-swallow */
 static int enablehidevacant; /* dwm-hide_vacant_tags */
 static Inset default_inset; /* dwm-insets */
-
+static const char *autostart, *autostart_blocking; /* dwm-autostart */
 #define FORCE_VSPLIT 1  /* nrowgrid layout: force two clients to always split vertically */
 #include "vanitygaps.c"
 
@@ -200,6 +200,8 @@ read_cfgfile()
 			cfg_read_int(conf, "enableswallow", &enableswallow);
 			cfg_read_int(conf, "swallowfloating", &swallowfloating);
 			cfg_read_int(conf, "enablehidevacant", &enablehidevacant);
+			cfg_read_str(conf, "autostart", &autostart);
+			cfg_read_str(conf, "autostart_blocking", &autostart_blocking);
 			cfg_read_float(conf, "mfact", &mfact);
 			toml_table_t *tbl = toml_table_in(conf, "default_inset");
 			cfg_read_int(tbl, "x", (int *) &default_inset.x);
