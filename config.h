@@ -18,7 +18,6 @@ static unsigned int gappih, gappiv, gappoh, gappov, smartgaps; /* dwm-vanitygaps
 static int enableswallow, swallowfloating; /* dwm-swallow */
 static int enablehidevacant; /* dwm_hide_vacant_tags */
 
-
 #define FORCE_VSPLIT 1  /* nrowgrid layout: force two clients to always split vertically */
 #include "vanitygaps.c"
 
@@ -372,42 +371,85 @@ tagall(const Arg *arg)
 	tag(&((Arg){.ui = ~0}));
 }
 
+void
+focusstack_dec(const Arg *arg)
+{
+	focusstack(&((Arg) { .i = INC(-1) }));
+}
+
+void
+focusstack_inc(const Arg *arg)
+{
+	focusstack(&((Arg) { .i = INC(+1) }));
+}
+
+void
+focusstack_prev(const Arg *arg)
+{
+	focusstack(&((Arg) { .i = PREVSEL }));
+}
+
+void
+pushstack_dec(const Arg *arg)
+{
+	pushstack(&((Arg) { .i = INC(-1) }));
+}
+
+void
+pushstack_inc(const Arg *arg)
+{
+	pushstack(&((Arg) { .i = INC(+1) }));
+}
+
+void
+pushstack_prev(const Arg *arg)
+{
+	pushstack(&((Arg) { .i = PREVSEL }));
+}
+
 /* signal definitions */
 /* signum must be greater than 0 */
 /* trigger signals using `xsetroot -name "fsignal:<signame> [<type> <value>]"` */
 static Signal signals[] = {
-	/* signum           function */
-	{ "defaultgaps",    defaultgaps },
-	{ "focusstack",     focusstack },
-	{ "setmfact",       setmfact },
-	{ "setcfact",       setcfact },
-	{ "togglebar",      togglebar },
-	{ "incnmaster",     incnmaster },
-	{ "incrgaps",       incrgaps },
-	{ "incrigaps",      incrigaps },
-	{ "incrogaps",      incrogaps },
-	{ "incrivgaps",     incrivgaps },
-	{ "incrihgaps",     incrihgaps },
-	{ "incrovgaps",     incrovgaps },
-	{ "incrohgaps",     incrohgaps },
-	{ "togglefloating", togglefloating },
-	{ "focusmon",       focusmon },
-	{ "tagmon",         tagmon },
-	{ "zoom",           zoom },
-	{ "view",           view },
-	{ "viewall",        viewall },
-	{ "viewex",         viewex },
-	{ "toggleview",     view },
-	{ "toggleviewex",   toggleviewex },
-	{ "tag",            tag },
-	{ "tagall",         tagall },
-	{ "tagex",          tagex },
-	{ "togglegaps",     togglegaps },
-	{ "toggletag",      tag },
-	{ "toggletagex",    toggletagex },
-	{ "killclient",     killclient },
-	{ "quit",           quit },
-	{ "setlayout",      setlayout },
-	{ "setlayoutex",    setlayoutex },
+	/* signum             function */
+	{ "defaultgaps",      defaultgaps },
+	{ "focusstack",       focusstack },
+	{ "focusstack_dec",   focusstack_dec },
+	{ "focusstack_inc",   focusstack_inc },
+	{ "focusstack_prev",  focusstack_prev },
+	{ "pushstack",        pushstack },
+	{ "pushstack_dec",    pushstack_dec },
+	{ "pushstack_inc",    pushstack_inc },
+	{ "pushstack_prev",   pushstack_prev },
+	{ "setmfact",         setmfact },
+	{ "setcfact",         setcfact },
+	{ "togglebar",        togglebar },
+	{ "incnmaster",       incnmaster },
+	{ "incrgaps",         incrgaps },
+	{ "incrigaps",        incrigaps },
+	{ "incrogaps",        incrogaps },
+	{ "incrivgaps",       incrivgaps },
+	{ "incrihgaps",       incrihgaps },
+	{ "incrovgaps",       incrovgaps },
+	{ "incrohgaps",       incrohgaps },
+	{ "togglefloating",   togglefloating },
+	{ "focusmon",         focusmon },
+	{ "tagmon",           tagmon },
+	{ "zoom",             zoom },
+	{ "view",             view },
+	{ "viewall",          viewall },
+	{ "viewex",           viewex },
+	{ "toggleview",       view },
+	{ "toggleviewex",     toggleviewex },
+	{ "tag",              tag },
+	{ "tagall",           tagall },
+	{ "tagex",            tagex },
+	{ "togglegaps",       togglegaps },
+	{ "toggletag",        tag },
+	{ "toggletagex",      toggletagex },
+	{ "killclient",       killclient },
+	{ "quit",             quit },
+	{ "setlayout",        setlayout },
+	{ "setlayoutex",      setlayoutex },
 };
 

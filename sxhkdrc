@@ -8,10 +8,46 @@ alt + b
   dwmc togglebar
 
 alt + j
-  dwmc focusstack 1
+  dwmc focusstack_inc
 
 alt + k
+  dwmc focusstack_dec
+
+alt + grave
+  dwmc focusstack_prev
+
+alt + q
+  dwmc focusstack 0
+
+alt + a
+  dwmc focusstack 1
+
+alt + z
+  dwmc focusstack 2
+
+alt + x
   dwmc focusstack -1
+
+alt + shift + j
+  dwmc pushstack_inc
+
+alt + shift + k
+  dwmc pushstack_dec
+
+alt + shift + grave
+  dwmc pushstack_prev
+
+alt + shift + q
+  dwmc pushstack 0
+
+alt + shift + a
+  dwmc pushstack 1
+
+alt + shift + z
+  dwmc pushstack 2
+
+alt + shift + x
+  dwmc pushstack -1
 
 alt + i
   dwmc incnmaster 1
@@ -33,18 +69,6 @@ alt + shift + l
 
 alt + Return
   dwmc zoom
-
-alt + z
-  dwmc incrgaps 1
-
-alt + shift + z
-  dwmc incrgaps -1
-
-alt + x
-  dwmc incrigaps u
-
-alt + shift + x
-  dwmc incrigaps -1
 
 alt + v
   dwmc incrogaps 1
@@ -121,7 +145,7 @@ alt + shift + comma
 alt + shift + period
   dwmc tagmon 1
 
-alt + shift + q
+alt + shift + backspace
   dwmc quit
 
 alt + {_,ctrl +}{_,shift +} {1-9}
