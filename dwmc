@@ -21,7 +21,7 @@ case $# in
 	view)
 		signal "$1" ui "$2"
 		;;
-	viewex | toggleviewex | tagex | toggletagex | setlayoutex | focusstack | pushstack | incnmaster | focusmon | tagmon | incrgaps | incrigaps | incrogaps | incrihgaps | incrivgaps | incrohgaps | incrovgaps)
+	viewex | toggleviewex | tagex | toggletagex | setlayoutex | focusstack | pushstack | incnmaster | focusmon | tagmon | incrgaps | incrigaps | incrogaps | incrihgaps | incrivgaps | incrohgaps | incrovgaps | shiftview)
 		signal "$1" i "$2"
 		;;
 	setmfact | setcfact)

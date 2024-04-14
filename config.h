@@ -421,6 +421,7 @@ static Signal signals[] = {
 	{ "pushstack_dec",    pushstack_dec },
 	{ "pushstack_inc",    pushstack_inc },
 	{ "pushstack_prev",   pushstack_prev },
+	{ "shiftview",        shiftview },
 	{ "setmfact",         setmfact },
 	{ "setcfact",         setcfact },
 	{ "togglebar",        togglebar },

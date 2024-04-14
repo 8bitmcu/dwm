@@ -49,6 +49,12 @@ alt + shift + z
 alt + shift + x
   dwmc pushstack -1
 
+alt + g
+  dwmc shiftview +1
+
+alt + shift + g
+  dwmc shiftview -1
+
 alt + i
   dwmc incnmaster 1
 
@@ -145,7 +151,7 @@ alt + shift + comma
 alt + shift + period
   dwmc tagmon 1
 
-alt + shift + backspace
+alt + shift + BackSpace
   dwmc quit
 
 alt + {_,ctrl +}{_,shift +} {1-9}

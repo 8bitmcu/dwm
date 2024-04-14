@@ -9,6 +9,7 @@ This fork merges the following patches:
 - [dwm-cfacts-vanitygaps](https://dwm.suckless.org/patches/vanitygaps): Adds gaps between client windows and gaps between windows and the screen edge.
 - [dwm-dwmc](https://dwm.suckless.org/patches/dwmc): Simple dwmc client using a fork of fsignal to communicate with dwm.
 - [dwm-hide_vacant_tags](https://dwm.suckless.org/patches/hide_vacant_tags): Prevents dwm from drawing tags with no clients on the bar.
+- [dwm-shiftview](https://dwm.suckless.org/patches/nextprev): Increment or decrement the selected tag.
 - [dwm-stacker](https://dwm.suckless.org/patches/stacker): Provides comprehensive utilities for managing the client stack.
 - [dwm-swallow](https://dwm.suckless.org/patches/swallow): Adds "window swallowing" to dwm as known from Plan 9's windowing system.
 - [dwm-systray](https://dwm.suckless.org/patches/systray): A simple system tray implementation.
