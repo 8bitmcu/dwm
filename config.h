@@ -16,6 +16,8 @@ static unsigned int alphas[SchemeLast][3]; /* dwm-alpha */
 static int systraypinning, systrayonleft, systrayspacing, systraypinningfailfirst, showsystray; /* dwm-systray */
 static unsigned int gappih, gappiv, gappoh, gappov, smartgaps; /* dwm-vanitygaps */
 static int enableswallow, swallowfloating; /* dwm-swallow */
+static int enablehidevacant; /* dwm_hide_vacant_tags */
+
 
 #define FORCE_VSPLIT 1  /* nrowgrid layout: force two clients to always split vertically */
 #include "vanitygaps.c"
@@ -197,6 +199,7 @@ read_cfgfile()
 			cfg_read_int(conf, "systraypinningfailfirst", &systraypinningfailfirst);
 			cfg_read_int(conf, "enableswallow", &enableswallow);
 			cfg_read_int(conf, "swallowfloating", &swallowfloating);
+			cfg_read_int(conf, "enablehidevacant", &enablehidevacant);
 			cfg_read_float(conf, "mfact", &mfact);
 			n_fonts = cfg_read_strarr(conf, "fonts", &fonts, 0);
 			n_tags = cfg_read_strarr(conf, "tags", &tags, 0);
