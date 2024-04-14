@@ -76,6 +76,9 @@ alt + shift + l
 alt + Return
   dwmc zoom
 
+alt + s
+  dwmc togglesticky
+
 alt + v
   dwmc incrogaps 1
 

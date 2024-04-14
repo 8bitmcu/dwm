@@ -13,6 +13,7 @@ This fork merges the following patches:
 - [dwm-preserveonrestart](https://dwm.suckless.org/patches/preserveonrestart): Preserve client tags on restarting dwm.
 - [dwm-shiftview](https://dwm.suckless.org/patches/nextprev): Increment or decrement the selected tag.
 - [dwm-stacker](https://dwm.suckless.org/patches/stacker): Provides comprehensive utilities for managing the client stack.
+- [dwm-sticky](https://dwm.suckless.org/patches/sticky): A sticky client is visible on all tags.
 - [dwm-swallow](https://dwm.suckless.org/patches/swallow): Adds "window swallowing" to dwm as known from Plan 9's windowing system.
 - [dwm-systray](https://dwm.suckless.org/patches/systray): A simple system tray implementation.
 

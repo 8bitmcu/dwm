@@ -228,6 +228,7 @@ read_cfgfile()
 				cfg_read_int(tbl, "isfloating", &r->isfloating);
 				cfg_read_int(tbl, "iscentered", &r->iscentered);
 				cfg_read_int(tbl, "isterminal", &r->isterminal);
+				cfg_read_int(tbl, "issticky", &r->issticky);
 				cfg_read_int(tbl, "noswallow", &r->noswallow);
 				cfg_read_int(tbl, "monitor", &r->monitor);
 				rules[i] = r;
@@ -448,6 +449,7 @@ static Signal signals[] = {
 	{ "tagex",            tagex },
 	{ "togglegaps",       togglegaps },
 	{ "toggletag",        tag },
+	{ "togglesticky",     togglesticky },
 	{ "toggletagex",      toggletagex },
 	{ "killclient",       killclient },
 	{ "quit",             quit },

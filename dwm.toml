@@ -83,7 +83,7 @@ enableswallow = 1
 # 1 means swallow floating windows by default
 swallowfloating = 0
 
-# valid properties: class, instance, title, tag, isfloating, monitor
+# valid properties: class, instance, title, tag, isfloating, isterminal, noswallow, iscentered, issticky, monitor
 rules = [ { class = "GIMP", isfloating = 1 },
           { class = "St", isterminal = 1 },
           { class = "Firefox", tag = 8, noswallow = -1 },
