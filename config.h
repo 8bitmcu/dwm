@@ -226,6 +226,7 @@ read_cfgfile()
 				cfg_read_str(tbl, "title", &r->title);
 				parse_tag(tbl, "tag", (int *) &r->tags);
 				cfg_read_int(tbl, "isfloating", &r->isfloating);
+				cfg_read_int(tbl, "iscentered", &r->iscentered);
 				cfg_read_int(tbl, "isterminal", &r->isterminal);
 				cfg_read_int(tbl, "noswallow", &r->noswallow);
 				cfg_read_int(tbl, "monitor", &r->monitor);
