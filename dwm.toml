@@ -20,9 +20,9 @@ gappov = 30
 smartgaps = 0
 
 
-#######
-# BAR #
-#######
+##########
+# status #
+##########
 
 # font array
 fonts = [ "monospace:size=10" ]
@@ -74,9 +74,17 @@ tags = [ "1", "2", "3", "4", "5", "6", "7", "8", "9" ]
 # rules #
 #########
 
+# 1 means windows will be swallowed according to rules
+enableswallow = 1
+
+# 1 means swallow floating windows by default
+swallowfloating = 0
+
 # valid properties: class, instance, title, tag, isfloating, monitor
 rules = [ { class = "GIMP", isfloating = 1 },
-          { class = "Firefox", tag = 8 } ]
+          { class = "St", isterminal = 1 },
+          { class = "Firefox", tag = 8, noswallow = -1 },
+          { title = "Event Tester", noswallow = 1 }]
 
 ###########
 # layouts #

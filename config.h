@@ -15,6 +15,7 @@ static int n_fonts, n_tags, n_rules, n_layouts, n_keys, n_buttons;
 static unsigned int alphas[SchemeLast][3]; /* dwm-alpha */
 static int systraypinning, systrayonleft, systrayspacing, systraypinningfailfirst, showsystray; /* dwm-systray */
 static unsigned int gappih, gappiv, gappoh, gappov, smartgaps; /* dwm-vanitygaps */
+static int enableswallow, swallowfloating; /* dwm-swallow */
 
 #define FORCE_VSPLIT 1  /* nrowgrid layout: force two clients to always split vertically */
 #include "vanitygaps.c"
@@ -194,6 +195,8 @@ read_cfgfile()
 			cfg_read_int(conf, "systrayonleft", &systrayonleft);
 			cfg_read_int(conf, "systrayspacing", &systrayspacing);
 			cfg_read_int(conf, "systraypinningfailfirst", &systraypinningfailfirst);
+			cfg_read_int(conf, "enableswallow", &enableswallow);
+			cfg_read_int(conf, "swallowfloating", &swallowfloating);
 			cfg_read_float(conf, "mfact", &mfact);
 			n_fonts = cfg_read_strarr(conf, "fonts", &fonts, 0);
 			n_tags = cfg_read_strarr(conf, "tags", &tags, 0);
@@ -221,6 +224,8 @@ read_cfgfile()
 				cfg_read_str(tbl, "title", &r->title);
 				parse_tag(tbl, "tag", (int *) &r->tags);
 				cfg_read_int(tbl, "isfloating", &r->isfloating);
+				cfg_read_int(tbl, "isterminal", &r->isterminal);
+				cfg_read_int(tbl, "noswallow", &r->noswallow);
 				cfg_read_int(tbl, "monitor", &r->monitor);
 				rules[i] = r;
 			}
