@@ -155,4 +155,5 @@ alt + shift + BackSpace
   dwmc quit
 
 alt + {_,ctrl +}{_,shift +} {1-9}
-	dwmc {_,toggle}{viewex,tagex} {0-8}
+  dwmc {_,toggle}{viewex,tagex} {0-8}
+
