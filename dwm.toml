@@ -61,6 +61,9 @@ vertpadbar = 0
 # horizontal space between the statusbar text-items
 horizpadbar = 2
 
+# 1 means show window title on the statusbar
+showtitle = 0
+
 # 0 means no systray
 showsystray = 1
 

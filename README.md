@@ -16,9 +16,11 @@ This fork merges the following patches:
 - [dwm-dwmc](https://dwm.suckless.org/patches/dwmc): Simple dwmc client using a fork of fsignal to communicate with dwm.
 - [dwm-hide_vacant_tags](https://dwm.suckless.org/patches/hide_vacant_tags): Prevents dwm from drawing tags with no clients on the bar.
 - [dwm-insets](https://dwm.suckless.org/patches/insets): Defines custom insets from each edge of the screen.
+- [dwm-notitle](https://dwm.suckless.org/patches/notitle): Hides the window title.
 - [dwm-preserveonrestart](https://dwm.suckless.org/patches/preserveonrestart): Preserve client tags on restarting dwm.
 - [dwm-shiftview](https://dwm.suckless.org/patches/nextprev): Increment or decrement the selected tag.
 - [dwm-stacker](https://dwm.suckless.org/patches/stacker): Provides comprehensive utilities for managing the client stack.
+- [dwm-statuspadding](https://dwm.suckless.org/patches/statuspadding): Makes the amount of horizontal and vertical padding in the status bar configurable.
 - [dwm-sticky](https://dwm.suckless.org/patches/sticky): A sticky client is visible on all tags.
 - [dwm-swallow](https://dwm.suckless.org/patches/swallow): Adds "window swallowing" to dwm as known from Plan 9's windowing system.
 - [dwm-systray](https://dwm.suckless.org/patches/systray): A simple system tray implementation.
