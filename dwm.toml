@@ -55,6 +55,12 @@ vertpad = 0
 # horizontal space between the statusbar and the edge of the screen
 sidepad = 0
 
+# vertical space between the statusbar text-items. Ignored if barheight is specified
+vertpadbar = 0
+
+# horizontal space between the statusbar text-items
+horizpadbar = 2
+
 # 0 means no systray
 showsystray = 1
 
