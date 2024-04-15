@@ -8,6 +8,7 @@ This fork merges the following patches:
 - [dwm-actualfullscreen](https://dwm.suckless.org/patches/actualfullscreen): Toggle fullscreen for a window.
 - [dwm-alpha](https://dwm.suckless.org/patches/alpha): Allow dwm to have translucent bars, while keeping all the text on it opaque.
 - [dwm-autostart](https://dwm.suckless.org/patches/autostart): Make dwm run `autostart_blocking` and `autostart &` before entering the handler loop.
+- [dwm-bar-height](https://dwm.suckless.org/patches/bar_height): Allows user to change dwm's default bar height.
 - [dwm-center](https://dwm.suckless.org/patches/center): Add an iscentered rule to automatically center clients on the current monitor.
 - [dwm-cfacts-vanitygaps](https://dwm.suckless.org/patches/vanitygaps): Adds gaps between client windows and gaps between windows and the screen edge.
 - [dwm-dwmc](https://dwm.suckless.org/patches/dwmc): Simple dwmc client using a fork of fsignal to communicate with dwm.
