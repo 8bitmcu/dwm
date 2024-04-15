@@ -62,7 +62,10 @@ vertpadbar = 0
 horizpadbar = 2
 
 # 1 means show window title on the statusbar
-showtitle = 0
+showtitle = 1
+
+# 1 means center align the window title
+centretitle = 0
 
 # 0 means no systray
 showsystray = 1

@@ -23,6 +23,7 @@ static int barheight; /* dwm-bar-height */
 static int vertpad, sidepad; /* dwm-barpadding */
 static int vertpadbar, horizpadbar; /* dwm-statuspadding */
 static int showtitle; /* dwm-notitle */
+static int centretitle; /* dwm-centretitle */
 
 #define FORCE_VSPLIT 1  /* nrowgrid layout: force two clients to always split vertically */
 #include "vanitygaps.c"
@@ -211,6 +212,7 @@ read_cfgfile()
 			cfg_read_int(conf, "vertpadbar", &vertpadbar);
 			cfg_read_int(conf, "horizpadbar", &horizpadbar);
 			cfg_read_int(conf, "showtitle", &showtitle);
+			cfg_read_int(conf, "centretitle", &centretitle);
 			cfg_read_str(conf, "autostart", &autostart);
 			cfg_read_str(conf, "autostart_blocking", &autostart_blocking);
 			cfg_read_float(conf, "mfact", &mfact);

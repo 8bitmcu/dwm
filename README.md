@@ -11,6 +11,7 @@ This fork merges the following patches:
 - [dwm-barpadding](https://dwm.suckless.org/patches/barpadding): Adds verticle and horizontal space between the statusbar and the edge of the screen.
 - [dwm-bar-height](https://dwm.suckless.org/patches/bar_height): Allows user to change dwm's default bar height.
 - [dwm-center](https://dwm.suckless.org/patches/center): Add an iscentered rule to automatically center clients on the current monitor.
+- [dwm-centretitle](https://dwm.suckless.org/patches/centretitle): Place the title of focused client in the middle of barwin.
 - [dwm-cfacts-vanitygaps](https://dwm.suckless.org/patches/vanitygaps): Adds gaps between client windows and gaps between windows and the screen edge.
 - [dwm-colorbar](https://dwm.suckless.org/patches/colorbar): Lets you change the foreground and background color of every statusbar element.
 - [dwm-dwmc](https://dwm.suckless.org/patches/dwmc): Simple dwmc client using a fork of fsignal to communicate with dwm.
