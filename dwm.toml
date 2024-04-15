@@ -85,6 +85,39 @@ SchemeSel.FgAlpha = 255
 SchemeSel.BgAlpha = 208
 SchemeSel.BorderAlpha = 255
 
+# dwmblocks area
+SchemeStatus.ColFg = "#bbbbbb"
+SchemeStatus.ColBg = "#222222"
+SchemeStatus.FgAlpha = 255
+SchemeStatus.BgAlpha = 208
+
+# selected tag
+SchemeTagsSel.ColFg = "#eeeeee"
+SchemeTagsSel.ColBg = "#005577"
+SchemeTagsSel.FgAlpha = 255
+SchemeTagsSel.BgAlpha = 208
+
+# unselected tag
+SchemeTagsNorm.ColFg = "#bbbbbb"
+SchemeTagsNorm.ColBg = "#222222"
+SchemeTagsNorm.FgAlpha = 255
+SchemeTagsNorm.BgAlpha = 208
+
+# window title area
+SchemeInfoSel.ColFg = "#eeeeee"
+SchemeInfoSel.ColBg = "#005577"
+SchemeInfoSel.FgAlpha = 255
+SchemeInfoSel.BgAlpha = 208
+
+# window title area
+SchemeInfoNorm.ColFg = "#bbbbbb"
+SchemeInfoNorm.ColBg = "#222222"
+SchemeInfoNorm.FgAlpha = 255
+SchemeInfoNorm.BgAlpha = 208
+
+# system tray
+SchemeSystrayNorm.ColBg = "#00ffff"
+SchemeSystrayNorm.BgAlpha = 208
 
 ###########
 # tagging #
