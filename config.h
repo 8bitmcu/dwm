@@ -25,6 +25,7 @@ static int vertpadbar, horizpadbar; /* dwm-statuspadding */
 static int showtitle; /* dwm-notitle */
 static int centretitle; /* dwm-centretitle */
 static int winicon, iconsize, iconspacing; /* dwm-winicon */
+static int ulinepad, ulinestroke, ulinevoffset, ulineall, showuline; /* dwm-underlinetags */
 
 #define FORCE_VSPLIT 1  /* nrowgrid layout: force two clients to always split vertically */
 #include "vanitygaps.c"
@@ -217,6 +218,11 @@ read_cfgfile()
 			cfg_read_int(conf, "winicon", &winicon);
 			cfg_read_int(conf, "iconsize", &iconsize);
 			cfg_read_int(conf, "iconspacing", &iconspacing);
+			cfg_read_int(conf, "showuline", &showuline);
+			cfg_read_int(conf, "ulinepad", &ulinepad);
+			cfg_read_int(conf, "ulinestroke", &ulinestroke);
+			cfg_read_int(conf, "ulinevoffset", &ulinevoffset);
+			cfg_read_int(conf, "ulineall", &ulineall);
 			cfg_read_str(conf, "autostart", &autostart);
 			cfg_read_str(conf, "autostart_blocking", &autostart_blocking);
 			cfg_read_float(conf, "mfact", &mfact);

@@ -25,6 +25,7 @@ This fork merges the following patches:
 - [dwm-sticky](https://dwm.suckless.org/patches/sticky): A sticky client is visible on all tags.
 - [dwm-swallow](https://dwm.suckless.org/patches/swallow): Adds "window swallowing" to dwm as known from Plan 9's windowing system.
 - [dwm-systray](https://dwm.suckless.org/patches/systray): A simple system tray implementation.
+- [dwm-underlinetags](https://dwm.suckless.org/patches/underlinetags): Underlines selected tags.
 - [dwm-winicon](https://dwm.suckless.org/patches/winicon): Enables dwm to show window icons.
 
 And adds the following other changes:

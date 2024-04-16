@@ -74,7 +74,7 @@ iconsize = 16
 iconspacing = 5
 
 # 1 means center align the window title
-centretitle = 1
+centretitle = 0
 
 # 0 means no systray
 showsystray = 1
@@ -146,6 +146,21 @@ SchemeSystrayNorm.BgAlpha = 208
 
 # 1 means hide vacant tags
 enablehidevacant = 1
+
+# 1 means enable dwm-underlinetags
+showuline = 0
+
+# horizontal padding between the underline and tag
+ulinepad = 5
+
+# thickness / height of the underline
+ulinestroke = 2
+
+# how far above the bottom of the bar the line should appear
+ulinevoffset = 0
+
+# 1 to show underline on all tags, 0 for just the active ones
+ulineall = 0
 
 tags = [ "1", "2", "3", "4", "5", "6", "7", "8", "9" ]
 
