@@ -26,6 +26,7 @@ static int showtitle; /* dwm-notitle */
 static int centretitle; /* dwm-centretitle */
 static int winicon, iconsize, iconspacing; /* dwm-winicon */
 static int ulinepad, ulinestroke, ulinevoffset, ulineall, showuline; /* dwm-underlinetags */
+static int showlayout;
 
 #define FORCE_VSPLIT 1  /* nrowgrid layout: force two clients to always split vertically */
 #include "vanitygaps.c"
@@ -200,6 +201,7 @@ read_cfgfile()
 			cfg_read_int(conf, "nmaster", &nmaster);
 			cfg_read_int(conf, "resizehints", &resizehints);
 			cfg_read_int(conf, "lockfullscreen", &lockfullscreen);
+			cfg_read_int(conf, "showlayout", &showlayout);
 			cfg_read_int(conf, "showsystray", &showsystray);
 			cfg_read_int(conf, "systraypinning", &systraypinning);
 			cfg_read_int(conf, "systrayonleft", &systrayonleft);

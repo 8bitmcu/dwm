@@ -61,6 +61,9 @@ vertpadbar = 0
 # horizontal space between the statusbar text-items
 horizpadbar = 2
 
+# 0 means the Layout symbol will be hidden from the statusbar
+showlayout = 1
+
 # 1 means show window title on the statusbar
 showtitle = 1
 
@@ -124,6 +127,12 @@ SchemeTagsNorm.ColBg = "#222222"
 SchemeTagsNorm.FgAlpha = 255
 SchemeTagsNorm.BgAlpha = 208
 
+# Layout symbol
+SchemeLayoutNorm.ColFg = "#bbbbbb"
+SchemeLayoutNorm.ColBg = "#222222"
+SchemeLayoutNorm.FgAlpha = 255
+SchemeLayoutNorm.BgAlpha = 208
+
 # window title area
 SchemeInfoSel.ColFg = "#eeeeee"
 SchemeInfoSel.ColBg = "#005577"
@@ -137,7 +146,7 @@ SchemeInfoNorm.FgAlpha = 255
 SchemeInfoNorm.BgAlpha = 208
 
 # system tray
-SchemeSystrayNorm.ColBg = "#00ffff"
+SchemeSystrayNorm.ColBg = "#bbbbbb"
 SchemeSystrayNorm.BgAlpha = 208
 
 ###########

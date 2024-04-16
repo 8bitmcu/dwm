@@ -88,7 +88,7 @@
 
 /* enums */
 enum { CurNormal, CurResize, CurMove, CurLast }; /* cursor */
-enum { SchemeNorm, SchemeSel, SchemeStatus, SchemeTagsSel, SchemeTagsNorm, SchemeInfoSel, SchemeInfoNorm, SchemeSystrayNorm, SchemeLast }; /* color schemes */
+enum { SchemeNorm, SchemeSel, SchemeStatus, SchemeTagsSel, SchemeTagsNorm, SchemeInfoSel, SchemeInfoNorm, SchemeSystrayNorm, SchemeLayoutNorm, SchemeLast }; /* color schemes */
 enum { NetSupported, NetWMName, NetWMIcon, NetWMState, NetWMCheck,
        NetSystemTray, NetSystemTrayOP, NetSystemTrayOrientation, NetSystemTrayOrientationHorz,
        NetWMFullscreen, NetWMSticky, NetActiveWindow, NetWMWindowType,
@@ -98,7 +98,7 @@ enum { WMProtocols, WMDelete, WMState, WMTakeFocus, WMLast }; /* default atoms *
 enum { ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle,
        ClkClientWin, ClkRootWin, ClkLast }; /* clicks */
 
-const char* colorsn[] = { "SchemeNorm", "SchemeSel", "SchemeStatus", "SchemeTagsSel", "SchemeTagsNorm", "SchemeInfoSel", "SchemeInfoNorm", "SchemeSystrayNorm" }; /* color schemes */
+const char* colorsn[] = { "SchemeNorm", "SchemeSel", "SchemeStatus", "SchemeTagsSel", "SchemeTagsNorm", "SchemeInfoSel", "SchemeInfoNorm", "SchemeSystrayNorm", "SchemeLayoutNorm" }; /* color schemes */
 
 typedef union {
 	int i;
@@ -1034,9 +1034,12 @@ drawbar(Monitor *m)
 				urg & 1 << i);
 		x += w;
 	}
-	w = TEXTW(m->ltsymbol);
-	drw_setscheme(drw, scheme[SchemeTagsNorm]);
-	x = drw_text(drw, x, 0, w, bh, lrpad / 2, m->ltsymbol, 0);
+
+  if (showlayout) {
+    w = TEXTW(m->ltsymbol);
+    drw_setscheme(drw, scheme[SchemeLayoutNorm]);
+    x = drw_text(drw, x, 0, w, bh, lrpad / 2, m->ltsymbol, 0);
+  }
 
 	if ((w = m->ww - tw - stw - x) > bh) {
 		if (m->sel && showtitle) {
