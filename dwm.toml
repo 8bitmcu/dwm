@@ -64,8 +64,17 @@ horizpadbar = 2
 # 1 means show window title on the statusbar
 showtitle = 1
 
+# 1 means show window icon left of the window title on the statusbar
+winicon = 1
+
+# default icon size is 16px
+iconsize = 16
+
+# space between icon and window title
+iconspacing = 5
+
 # 1 means center align the window title
-centretitle = 0
+centretitle = 1
 
 # 0 means no systray
 showsystray = 1
