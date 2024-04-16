@@ -146,7 +146,7 @@ SchemeInfoNorm.FgAlpha = 255
 SchemeInfoNorm.BgAlpha = 208
 
 # system tray
-SchemeSystrayNorm.ColBg = "#bbbbbb"
+SchemeSystrayNorm.ColBg = "#222222"
 SchemeSystrayNorm.BgAlpha = 208
 
 ###########
