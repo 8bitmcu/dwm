@@ -79,6 +79,9 @@ iconspacing = 5
 # 1 means center align the window title
 centretitle = 0
 
+# executable used for the statusbar status
+statusbar = "dwmblocks"
+
 # 0 means no systray
 showsystray = 1
 
@@ -233,7 +236,9 @@ layouts = [ { symbol = "[]=",     arrange = "tile" },
 buttons = [ { click = "ClkLtSymbol",    mask = 0,       button = "button1",   function = "setlayout",       argument = { } },
             { click = "ClkLtsymbol",    mask = 0,       button = "button3",   function = "setlayout",       argument = 2 },
             { click = "ClkWinTitle",    mask = 0,       button = "button2",   function = "quit",            argument = { } },
-            { click = "ClkStatusText",  mask = 0,       button = "button2",   function = "spawn",           argument = [ "st" ] },
+            { click = "ClkStatusText",  mask = 0,       button = "button1",   function = "sigstatusbar",    argument = 1 },
+            { click = "ClkStatusText",  mask = 0,       button = "button2",   function = "sigstatusbar",    argument = 2 },
+            { click = "ClkStatusText",  mask = 0,       button = "button3",   function = "sigstatusbar",    argument = 3 },
             { click = "ClkClientWin",   mask = "alt",   button = "button1",   function = "movemouse",       argument = { } },
             { click = "ClkClientWin",   mask = "alt",   button = "button2",   function = "togglefloating",  argument = { } },
             { click = "ClkClientWin",   mask = "alt",   button = "button3",   function = "resizemouse",     argument = { } },

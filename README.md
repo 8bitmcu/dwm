@@ -21,6 +21,7 @@ This fork merges the following patches:
 - [dwm-preserveonrestart](https://dwm.suckless.org/patches/preserveonrestart): Preserve client tags on restarting dwm.
 - [dwm-shiftview](https://dwm.suckless.org/patches/nextprev): Increment or decrement the selected tag.
 - [dwm-stacker](https://dwm.suckless.org/patches/stacker): Provides comprehensive utilities for managing the client stack.
+- [dwm-statuscmd](https://dwm.suckless.org/patches/statuscmd): Adds the ability to signal a status monitor program when clicking on the status bar.
 - [dwm-statuspadding](https://dwm.suckless.org/patches/statuspadding): Makes the amount of horizontal and vertical padding in the status bar configurable.
 - [dwm-sticky](https://dwm.suckless.org/patches/sticky): A sticky client is visible on all tags.
 - [dwm-swallow](https://dwm.suckless.org/patches/swallow): Adds "window swallowing" to dwm as known from Plan 9's windowing system.

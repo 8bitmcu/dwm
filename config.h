@@ -26,10 +26,12 @@ static int showtitle; /* dwm-notitle */
 static int centretitle; /* dwm-centretitle */
 static int winicon, iconsize, iconspacing; /* dwm-winicon */
 static int ulinepad, ulinestroke, ulinevoffset, ulineall, showuline; /* dwm-underlinetags */
+static const char *statusbar; /* dwm-statuscmd */
 static int showlayout;
 
 #define FORCE_VSPLIT 1  /* nrowgrid layout: force two clients to always split vertically */
 #include "vanitygaps.c"
+
 
 static int
 cfg_read_str(toml_table_t *conf, char *key, const char **dest)
@@ -126,6 +128,9 @@ parse_functionargs(toml_table_t *tbl, void (**func)(const Arg *arg), const Arg *
 		cfg_read_int(tbl, "argument", (int *)&arg->i);
 	} else if (!strcmp(field, "tagmon")) {
 		*func = tagmon;
+		cfg_read_int(tbl, "argument", (int *)&arg->i);
+	} else if (!strcmp(field, "sigstatusbar")) {
+		*func = sigstatusbar;
 		cfg_read_int(tbl, "argument", (int *)&arg->i);
 	} else if (!strcmp(field, "quit"))
 		*func = quit;
@@ -225,6 +230,7 @@ read_cfgfile()
 			cfg_read_int(conf, "ulinestroke", &ulinestroke);
 			cfg_read_int(conf, "ulinevoffset", &ulinevoffset);
 			cfg_read_int(conf, "ulineall", &ulineall);
+			cfg_read_str(conf, "statusbar", &statusbar);
 			cfg_read_str(conf, "autostart", &autostart);
 			cfg_read_str(conf, "autostart_blocking", &autostart_blocking);
 			cfg_read_float(conf, "mfact", &mfact);
