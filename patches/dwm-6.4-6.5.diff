@@ -1,0 +1,98 @@
+diff '--color=auto' dwm-6.4/config.def.h dwm-6.5/config.def.h
+59c59,60
+< static const char *dmenucmd[] = { "dmenu_run", "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
+---
+> static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
+> static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
+diff '--color=auto' dwm-6.4/config.mk dwm-6.5/config.mk
+2c2
+< VERSION = 6.4
+---
+> VERSION = 6.5
+29c29
+< CPPFLAGS = -D_DEFAULT_SOURCE -D_BSD_SOURCE -D_POSIX_C_SOURCE=200809L -DVERSION=\"${VERSION}\" ${XINERAMAFLAGS}
+---
+> CPPFLAGS = -D_DEFAULT_SOURCE -D_BSD_SOURCE -D_XOPEN_SOURCE=700L -DVERSION=\"${VERSION}\" ${XINERAMAFLAGS}
+diff '--color=auto' dwm-6.4/dwm.c dwm-6.5/dwm.c
+208d207
+< static void sigchld(int unused);
+958c957
+< 		unsigned int i, j;
+---
+> 		unsigned int i, j, k;
+960c959,960
+< 		KeyCode code;
+---
+> 		int start, end, skip;
+> 		KeySym *syms;
+963,967c963,976
+< 		for (i = 0; i < LENGTH(keys); i++)
+< 			if ((code = XKeysymToKeycode(dpy, keys[i].keysym)))
+< 				for (j = 0; j < LENGTH(modifiers); j++)
+< 					XGrabKey(dpy, code, keys[i].mod | modifiers[j], root,
+< 						True, GrabModeAsync, GrabModeAsync);
+---
+> 		XDisplayKeycodes(dpy, &start, &end);
+> 		syms = XGetKeyboardMapping(dpy, start, end - start + 1, &skip);
+> 		if (!syms)
+> 			return;
+> 		for (k = start; k <= end; k++)
+> 			for (i = 0; i < LENGTH(keys); i++)
+> 				/* skip modifier codes, we do that ourselves */
+> 				if (keys[i].keysym == syms[(k - start) * skip])
+> 					for (j = 0; j < LENGTH(modifiers); j++)
+> 						XGrabKey(dpy, k,
+> 							 keys[i].mod | modifiers[j],
+> 							 root, True,
+> 							 GrabModeAsync, GrabModeAsync);
+> 		XFree(syms);
+1535a1545,1551
+> 	struct sigaction sa;
+> 
+> 	/* do not transform children into zombies when they terminate */
+> 	sigemptyset(&sa.sa_mask);
+> 	sa.sa_flags = SA_NOCLDSTOP | SA_NOCLDWAIT | SA_RESTART;
+> 	sa.sa_handler = SIG_IGN;
+> 	sigaction(SIGCHLD, &sa, NULL);
+1537,1538c1553,1554
+< 	/* clean up any zombies immediately */
+< 	sigchld(0);
+---
+> 	/* clean up any zombies (inherited from .xinitrc etc) immediately */
+> 	while (waitpid(-1, NULL, WNOHANG) > 0);
+1632,1639d1647
+< sigchld(int unused)
+< {
+< 	if (signal(SIGCHLD, sigchld) == SIG_ERR)
+< 		die("can't install SIGCHLD handler:");
+< 	while (0 < waitpid(-1, NULL, WNOHANG));
+< }
+< 
+< void
+1641a1650,1653
+> 	struct sigaction sa;
+> 
+> 	if (arg->v == dmenucmd)
+> 		dmenumon[0] = '0' + selmon->num;
+1645a1658,1663
+> 
+> 		sigemptyset(&sa.sa_mask);
+> 		sa.sa_flags = 0;
+> 		sa.sa_handler = SIG_DFL;
+> 		sigaction(SIGCHLD, &sa, NULL);
+> 
+diff '--color=auto' dwm-6.4/Makefile dwm-6.5/Makefile
+9,15c9
+< all: options dwm
+< 
+< options:
+< 	@echo dwm build options:
+< 	@echo "CFLAGS   = ${CFLAGS}"
+< 	@echo "LDFLAGS  = ${LDFLAGS}"
+< 	@echo "CC       = ${CC}"
+---
+> all: dwm
+51c45
+< .PHONY: all options clean dist install uninstall
+---
+> .PHONY: all clean dist install uninstall

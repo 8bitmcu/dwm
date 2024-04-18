@@ -1,6 +1,6 @@
 dwm - dynamic window manager (fork)
 ===================================
-A bloated fork of suckless [dwm](https://dwm.suckless.org/) with lots of customizations.
+A bloated fork of suckless [dwm](https://dwm.suckless.org/) 6.5 with lots of customizations.
 
 
 This fork merges the following patches: 
