@@ -5,12 +5,12 @@ static int borderpx, snap, showbar, topbar;
 static const char *colors[SchemeLast][ColLast];
 static float mfact;
 static int nmaster, resizehints, lockfullscreen;
-static const char **fonts, **tags;
+static const char **tags;
 static const Rule **rules;
 static const Layout **layouts;
 static const Key **keys;
 static const Button **buttons;
-static int n_fonts, n_tags, n_rules, n_layouts, n_keys, n_buttons;
+static int n_tags, n_rules, n_layouts, n_keys, n_buttons;
 
 static unsigned int alphas[SchemeLast][3]; /* dwm-alpha */
 static int systraypinning, systrayonleft, systrayspacing, systraypinningfailfirst, showsystray; /* dwm-systray */
@@ -27,6 +27,7 @@ static int centretitle; /* dwm-centretitle */
 static int winicon, iconsize, iconspacing; /* dwm-winicon */
 static int ulinepad, ulinestroke, ulinevoffset, ulineall, showuline; /* dwm-underlinetags */
 static const char *statusbar; /* dwm-statuscmd */
+static const char *font; /* dwm-pango */
 static int showlayout;
 
 #define FORCE_VSPLIT 1  /* nrowgrid layout: force two clients to always split vertically */
@@ -230,6 +231,7 @@ read_cfgfile()
 			cfg_read_int(conf, "ulinestroke", &ulinestroke);
 			cfg_read_int(conf, "ulinevoffset", &ulinevoffset);
 			cfg_read_int(conf, "ulineall", &ulineall);
+			cfg_read_str(conf, "font", &font);
 			cfg_read_str(conf, "statusbar", &statusbar);
 			cfg_read_str(conf, "autostart", &autostart);
 			cfg_read_str(conf, "autostart_blocking", &autostart_blocking);
@@ -239,7 +241,6 @@ read_cfgfile()
 			cfg_read_int(tbl, "y", (int *) &default_inset.y);
 			cfg_read_int(tbl, "w", (int *) &default_inset.w);
 			cfg_read_int(tbl, "h", (int *) &default_inset.h);
-			n_fonts = cfg_read_strarr(conf, "fonts", &fonts, 0);
 			n_tags = cfg_read_strarr(conf, "tags", &tags, 0);
 			/* color table */
 			for (int j = 0; j < LENGTH(colorsn); j++) {

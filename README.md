@@ -18,6 +18,7 @@ This fork merges the following patches:
 - [dwm-hide_vacant_tags](https://dwm.suckless.org/patches/hide_vacant_tags): Prevents dwm from drawing tags with no clients on the bar.
 - [dwm-insets](https://dwm.suckless.org/patches/insets): Defines custom insets from each edge of the screen.
 - [dwm-notitle](https://dwm.suckless.org/patches/notitle): Hides the window title.
+- [dwm-pango](https://dwm.suckless.org/patches/pango): Adds pango support for the status bar.
 - [dwm-preserveonrestart](https://dwm.suckless.org/patches/preserveonrestart): Preserve client tags on restarting dwm.
 - [dwm-shiftview](https://dwm.suckless.org/patches/nextprev): Increment or decrement the selected tag.
 - [dwm-stacker](https://dwm.suckless.org/patches/stacker): Provides comprehensive utilities for managing the client stack.

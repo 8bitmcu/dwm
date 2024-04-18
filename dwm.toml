@@ -37,8 +37,8 @@ default_inset.h = 0
 # status #
 ##########
 
-# font array
-fonts = [ "monospace:size=10" ]
+# font
+font = "monospace 10"
 
 # 0 means no bar
 showbar = 1

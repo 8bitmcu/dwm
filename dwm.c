@@ -44,6 +44,7 @@
 #include <X11/extensions/Xinerama.h>
 #endif /* XINERAMA */
 #include <X11/Xft/Xft.h>
+#include <pango/pango.h>
 #include <X11/Xlib-xcb.h>
 #include <xcb/res.h>
 #ifdef __OpenBSD__
@@ -70,7 +71,8 @@
 #define WIDTH(X)                ((X)->w + 2 * (X)->bw)
 #define HEIGHT(X)               ((X)->h + 2 * (X)->bw)
 #define TAGMASK                 ((1 << n_tags) - 1)
-#define TEXTW(X)                (drw_fontset_getwidth(drw, (X)) + lrpad)
+#define TEXTW(X)                (drw_font_getwidth(drw, (X), False) + lrpad)
+#define TEXTWM(X)               (drw_font_getwidth(drw, (X), True) + lrpad)
 #define TRUNC(X,A,B)            (MAX((A), MIN((X), (B))))
 
 #define SYSTEM_TRAY_REQUEST_DOCK    0
@@ -336,7 +338,7 @@ static pid_t winpid(Window w);
 static Systray *systray = NULL;
 static unsigned long systrayorientation = _NET_SYSTEM_TRAY_ORIENTATION_HORZ;
 static const char broken[] = "broken";
-static char stext[256];
+static char stext[512];
 static int statusw;
 static int statussig;
 static pid_t statuspid = -1;
@@ -631,10 +633,10 @@ buttonpress(XEvent *e)
 					*s = '\0';
 
 					if (first) {
-						x += TEXTW(text);
+						x += TEXTWM(text);
 						first = 0;
 					} else {
-						x += TEXTW(text) - lrpad;
+						x += TEXTWM(text) - lrpad;
 					}
 
 					*s = ch;
@@ -705,9 +707,6 @@ cleanup(void)
 		free((void *) colors[j][ColBg]);
 		free((void *) colors[j][ColBorder]);
 	}
-	for (i = 0; i < n_fonts; i++)
-		free((void *)fonts[i]);
-	free(fonts);
 	for (i = 0; i < n_tags; i++)
 		free((void *)tags[i]);
 	free(tags);
@@ -748,6 +747,7 @@ cleanup(void)
 	}
 	free(buttons);
 	free((void *) statusbar);
+	free((void *) font);
 	XDestroyWindow(dpy, wmcheckwin);
 	drw_free(drw);
 	XSync(dpy, False);
@@ -1017,8 +1017,8 @@ drawbar(Monitor *m)
 {
 	int x, w, tw = 0, stw = 0;
 	int tlpad = 0;
-	int boxs = drw->fonts->h / 9;
-	int boxw = drw->fonts->h / 6 + 2;
+	int boxs = drw->font->h / 9;
+	int boxw = drw->font->h / 6 + 2;
 	unsigned int i, occ = 0, urg = 0;
 	Client *c;
 
@@ -1044,20 +1044,20 @@ drawbar(Monitor *m)
 				*s = '\0';
 
 				if (first) {
-					tw = TEXTW(text);
-					drw_text(drw, m->ww - statusw + x - stw, 0, tw, bh, lrpad/2, text, 0);
+					tw = TEXTWM(text);
+					drw_text(drw, m->ww - statusw + x - stw, 0, tw, bh, lrpad/2, text, 0, True);
 					first = 0;
 				} else {
-					tw = TEXTW(text) - lrpad;
-					drw_text(drw, m->ww - statusw + x - stw, 0, tw, bh, 0, text, 0);
+					tw = TEXTWM(text) - lrpad;
+					drw_text(drw, m->ww - statusw + x - stw, 0, tw, bh, 0, text, 0, True);
 				}
 				x += tw;
 				*s = ch;
 				text = s + 1;
 			}
 		}
-		tw = TEXTW(text) + 2;
-		drw_text(drw, m->ww - statusw + x - stw, 0, tw, bh, lrpad/2, text, 0);
+		tw = TEXTWM(text) + 2;
+		drw_text(drw, m->ww - statusw + x - stw, 0, tw, bh, lrpad/2, text, 0, True);
 		tw = statusw;
 	}
 
@@ -1077,7 +1077,7 @@ drawbar(Monitor *m)
 			continue;
 		w = TEXTW(tags[i]);
 		drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeTagsSel : SchemeTagsNorm]);
-		drw_text(drw, x, 0, w, bh, lrpad / 2, tags[i], urg & 1 << i);
+		drw_text(drw, x, 0, w, bh, lrpad / 2, tags[i], urg & 1 << i, False);
 		if (showuline > 0 && (ulineall || m->tagset[m->seltags] & 1 << i))
 			drw_rect(drw, x + ulinepad, bh - ulinestroke - ulinevoffset, w - (ulinepad * 2), ulinestroke, 1, 0);
 		if (!enablehidevacant && (occ & 1 << i))
@@ -1090,7 +1090,7 @@ drawbar(Monitor *m)
   if (showlayout) {
     w = TEXTW(m->ltsymbol);
     drw_setscheme(drw, scheme[SchemeLayoutNorm]);
-    x = drw_text(drw, x, 0, w, bh, lrpad / 2, m->ltsymbol, 0);
+    x = drw_text(drw, x, 0, w, bh, lrpad / 2, m->ltsymbol, 0, False);
   }
 
 	if ((w = m->ww - tw - stw - x) > bh) {
@@ -1099,11 +1099,11 @@ drawbar(Monitor *m)
 			int iconsp = winicon > 0 && m->sel->icon ? m->sel->icw + iconspacing : 0;
 			if (centretitle > 0) {
 				tlpad = MAX((m->ww - ((int)TEXTW(m->sel->name) - lrpad)) / 2 - x, lrpad / 2);
-				drw_text(drw, x, 0, w, bh, tlpad + iconsp, m->sel->name, 0);
+				drw_text(drw, x, 0, w, bh, tlpad + iconsp, m->sel->name, 0, False);
 				if (winicon > 0 && m->sel->icon)
 					drw_pic(drw, x + tlpad, (bh - m->sel->ich) / 2, m->sel->icw, m->sel->ich, m->sel->icon);
 			} else {
-				drw_text(drw, x, 0, w - 2 * sp, bh, lrpad / 2 + iconsp, m->sel->name, 0);
+				drw_text(drw, x, 0, w - 2 * sp, bh, lrpad / 2 + iconsp, m->sel->name, 0, False);
 				if (winicon > 0 && m->sel->icon)
 					drw_pic(drw, x + lrpad / 2, (bh - m->sel->ich) / 2, m->sel->icw, m->sel->ich, m->sel->icon);
 			}
@@ -2271,10 +2271,10 @@ setup(void)
 	root = RootWindow(dpy, screen);
 	xinitvisual();
 	drw = drw_create(dpy, screen, root, sw, sh, visual, depth, cmap);
-	if (!drw_fontset_create(drw, fonts, n_fonts))
+	if (!drw_font_create(drw, font))
 		die("no fonts could be loaded.");
-	lrpad = drw->fonts->h + horizpadbar;
-	bh = barheight ? barheight : drw->fonts->h + vertpadbar;
+	lrpad = drw->font->h + horizpadbar;
+	bh = barheight ? barheight : drw->font->h + vertpadbar;
 	updategeom();
 	sp = sidepad;
 	vp = (topbar == 1) ? vertpad : - vertpad;
@@ -2845,7 +2845,7 @@ updatestatus(void)
 {
 	if (!gettextprop(root, XA_WM_NAME, stext, sizeof(stext))) {
 		strcpy(stext, "dwm-"VERSION);
-		statusw = TEXTW(stext) + 2;
+		statusw = TEXTWM(stext) + 2;
 	} else {
 		char *text, *s, ch;
 
@@ -2858,16 +2858,16 @@ updatestatus(void)
 				*s = '\0';
 
 				if (first) {
-					statusw += TEXTW(text);
+					statusw += TEXTWM(text);
 					first = 0;
 				} else {
-					statusw += TEXTW(text) - lrpad;
+					statusw += TEXTWM(text) - lrpad;
 				}
 				*s = ch;
 				text = s + 1;
 			}
 		}
-		statusw += TEXTW(text) + 2;
+		statusw += TEXTWM(text) + 2;
 
 	}
 	drawbar(selmon);
