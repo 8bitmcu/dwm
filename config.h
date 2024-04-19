@@ -28,6 +28,7 @@ static int winicon, iconsize, iconspacing; /* dwm-winicon */
 static int ulinepad, ulinestroke, ulinevoffset, ulineall, showuline; /* dwm-underlinetags */
 static const char *statusbar; /* dwm-statuscmd */
 static const char *font; /* dwm-pango */
+static int pertag_showbars, pertag_nmaster, pertag_mfact, pertag_layout; /* dwm-pertag */
 static int showlayout, systrayiconsize;
 
 #define FORCE_VSPLIT 1  /* nrowgrid layout: force two clients to always split vertically */
@@ -232,6 +233,10 @@ read_cfgfile()
 			cfg_read_int(conf, "ulinestroke", &ulinestroke);
 			cfg_read_int(conf, "ulinevoffset", &ulinevoffset);
 			cfg_read_int(conf, "ulineall", &ulineall);
+			cfg_read_int(conf, "pertag_showbars", &pertag_showbars);
+			cfg_read_int(conf, "pertag_nmaster", &pertag_nmaster);
+			cfg_read_int(conf, "pertag_mfact", &pertag_mfact);
+			cfg_read_int(conf, "pertag_layout", &pertag_layout);
 			cfg_read_str(conf, "font", &font);
 			cfg_read_str(conf, "statusbar", &statusbar);
 			cfg_read_str(conf, "autostart", &autostart);
