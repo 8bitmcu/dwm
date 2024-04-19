@@ -28,7 +28,7 @@ static int winicon, iconsize, iconspacing; /* dwm-winicon */
 static int ulinepad, ulinestroke, ulinevoffset, ulineall, showuline; /* dwm-underlinetags */
 static const char *statusbar; /* dwm-statuscmd */
 static const char *font; /* dwm-pango */
-static int showlayout;
+static int showlayout, systrayiconsize;
 
 #define FORCE_VSPLIT 1  /* nrowgrid layout: force two clients to always split vertically */
 #include "vanitygaps.c"
@@ -213,6 +213,7 @@ read_cfgfile()
 			cfg_read_int(conf, "systrayonleft", &systrayonleft);
 			cfg_read_int(conf, "systrayspacing", &systrayspacing);
 			cfg_read_int(conf, "systraypinningfailfirst", &systraypinningfailfirst);
+			cfg_read_int(conf, "systrayiconsize", &systrayiconsize);
 			cfg_read_int(conf, "enableswallow", &enableswallow);
 			cfg_read_int(conf, "swallowfloating", &swallowfloating);
 			cfg_read_int(conf, "enablehidevacant", &enablehidevacant);

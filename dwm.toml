@@ -70,8 +70,8 @@ showtitle = 1
 # 1 means show window icon left of the window title on the statusbar
 winicon = 1
 
-# default icon size is 16px
-iconsize = 16
+# window icon size. 0 means they will be calculated according to statusbar height
+iconsize = 0
 
 # space between icon and window title
 iconspacing = 5
@@ -93,6 +93,9 @@ systrayonleft = 0
 
 # systray spacing
 systrayspacing = 2
+
+# systray icon size. 0 means they will be calculated according to the statusbar height
+systrayiconsize = 0
 
 # 1: if pinning fails, display systray on the first monitor, 0: display systray on the last monitor
 systraypinningfailfirst = 1

@@ -2324,6 +2324,8 @@ setup(void)
 	updategeom();
 	sp = sidepad;
 	vp = (topbar == 1) ? vertpad : - vertpad;
+	iconsize = iconsize ? iconsize : bh;
+	systrayiconsize = systrayiconsize ? systrayiconsize : bh;
 
 	/* init atoms */
 	utf8string = XInternAtom(dpy, "UTF8_STRING", False);
@@ -2952,21 +2954,21 @@ void
 updatesystrayicongeom(Client *i, int w, int h)
 {
 	if (i) {
-		i->h = bh;
+		i->h = systrayiconsize;
 		if (w == h)
-			i->w = bh;
-		else if (h == bh)
+			i->w = systrayiconsize;
+		else if (h == systrayiconsize)
 			i->w = w;
 		else
-			i->w = (int) ((float)bh * ((float)w / (float)h));
+			i->w = (int) ((float)systrayiconsize * ((float)w / (float)h));
 		applysizehints(i, &(i->x), &(i->y), &(i->w), &(i->h), False);
 		/* force icons into the systray dimensions if they don't want to */
-		if (i->h > bh) {
+		if (i->h > systrayiconsize) {
 			if (i->w == i->h)
-				i->w = bh;
+				i->w = systrayiconsize;
 			else
-				i->w = (int) ((float)bh * ((float)i->w / (float)i->h));
-			i->h = bh;
+				i->w = (int) ((float)systrayiconsize * ((float)i->w / (float)i->h));
+			i->h = systrayiconsize;
 		}
 	}
 }
@@ -3051,7 +3053,8 @@ updatesystray(int updatebar)
 		XMapRaised(dpy, i->win);
 		w += systrayspacing;
 		i->x = w;
-		XMoveResizeWindow(dpy, i->win, i->x, 0, i->w, i->h);
+		i->y = (bh - systrayiconsize) / 2;
+		XMoveResizeWindow(dpy, i->win, i->x, i->y, i->w, i->h);
 		w += i->w;
 		if (i->mon != m)
 			i->mon = m;
