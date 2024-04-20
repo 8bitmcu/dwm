@@ -9,12 +9,12 @@ OBJ = ${SRC:.c=.o}
 all: dwm
 
 .c.o:
-	${CC} -c ${CFLAGS} $<
+	${CC} -c -g ${CFLAGS} $<
 
 ${OBJ}: config.mk
 
 dwm: ${OBJ}
-	${CC} -o $@ drw.o dwm.o util.o toml.o ${LDFLAGS}
+	${CC} -g -o $@ drw.o dwm.o util.o toml.o ${LDFLAGS}
 
 clean:
 	rm -f dwm ${OBJ} toml.o dwm-${VERSION}.tar.gz

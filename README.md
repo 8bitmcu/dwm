@@ -32,7 +32,8 @@ This fork merges the following patches:
 - [dwm-winicon](https://dwm.suckless.org/patches/winicon): Enables dwm to show window icons.
 
 And adds the following other changes:
-- **configuration file**; loads configuration from `$XDG_CONFIG_HOME/dwm/dwm.toml`. This file must exists.
+- **configuration file**; loads configuration from `$XDG_CONFIG_HOME/dwm/dwm.toml` as an option.
+- **cascading styles**; default styles in config.h are overwriten by styles in dwm.toml; Scheme inherits other schemes.
 - **sxhkd**; key bindings are defined in sxhkdrc using dwmc
 
 Have a look at [dwm.toml](dwm.toml) and [sxhkdrc](sxhkdrc)!

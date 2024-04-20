@@ -713,11 +713,6 @@ cleanup(void)
 	for (i = 0; i < LENGTH(colors); i++)
 		free(scheme[i]);
 	free(scheme);
-	for (int j = 0; j < LENGTH(colorsn); j++) {
-		free((void *) colors[j][ColFg]);
-		free((void *) colors[j][ColBg]);
-		free((void *) colors[j][ColBorder]);
-	}
 	for (i = 0; i < n_tags; i++)
 		free((void *)tags[i]);
 	free(tags);
@@ -830,7 +825,7 @@ clientmessage(XEvent *e)
 			XSelectInput(dpy, c->win, StructureNotifyMask | PropertyChangeMask | ResizeRedirectMask);
 			XReparentWindow(dpy, c->win, systray->win, 0, 0);
 			/* use parents background color */
-			swa.background_pixel  = scheme[SchemeNorm][ColBg].pixel;
+			swa.background_pixel  = scheme[SchemeSystrayNorm][ColBg].pixel;
 			XChangeWindowAttributes(dpy, c->win, CWBackPixel, &swa);
 			sendevent(c->win, netatom[Xembed], StructureNotifyMask, CurrentTime, XEMBED_EMBEDDED_NOTIFY, 0 , systray->win, XEMBED_EMBEDDED_VERSION);
 			XSync(dpy, False);
@@ -3462,16 +3457,16 @@ main(int argc, char *argv[])
 		die("dwm: cannot open display");
 	if (!(xcon = XGetXCBConnection(dpy)))
 		die("dwm: cannot get xcb connection\n");
-	checkotherwm();
+	//checkotherwm();
 	read_cfgfile();
 	setup();
 #ifdef __OpenBSD__
 	if (pledge("stdio rpath proc exec ps", NULL) == -1)
 		die("pledge");
 #endif /* __OpenBSD__ */
-	scan();
-	runautostart();
-	run();
+	//scan();
+	//runautostart();
+	//run();
 	cleanup();
 	XCloseDisplay(dpy);
 	return EXIT_SUCCESS;
