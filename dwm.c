@@ -3457,16 +3457,16 @@ main(int argc, char *argv[])
 		die("dwm: cannot open display");
 	if (!(xcon = XGetXCBConnection(dpy)))
 		die("dwm: cannot get xcb connection\n");
-	//checkotherwm();
+	checkotherwm();
 	read_cfgfile();
 	setup();
 #ifdef __OpenBSD__
 	if (pledge("stdio rpath proc exec ps", NULL) == -1)
 		die("pledge");
 #endif /* __OpenBSD__ */
-	//scan();
-	//runautostart();
-	//run();
+	scan();
+	runautostart();
+	run();
 	cleanup();
 	XCloseDisplay(dpy);
 	return EXIT_SUCCESS;
