@@ -12,8 +12,11 @@ This fork merges the following patches:
 - [dwm-bar-height](https://dwm.suckless.org/patches/bar_height): Allows user to change dwm's default bar height.
 - [dwm-center](https://dwm.suckless.org/patches/center): Add an iscentered rule to automatically center clients on the current monitor.
 - [dwm-centretitle](https://dwm.suckless.org/patches/centretitle): Place the title of focused client in the middle of barwin.
+- [dwm-cfacts-dragcfacts](https://github.com/bakkeby/patches/blob/master/dwm/dwm-cfacts-dragcfact-6.4.diff): Lets you resize vertical splits in layouts.
 - [dwm-cfacts-vanitygaps](https://dwm.suckless.org/patches/vanitygaps): Adds gaps between client windows and gaps between windows and the screen edge.
 - [dwm-colorbar](https://dwm.suckless.org/patches/colorbar): Lets you change the foreground and background color of every statusbar element.
+- [dwm-dragfact](https://github.com/bakkeby/patches/blob/master/dwm/dwm-dragfact-6.3.diff): Lets you resize both horizontal/vertical splits in layouts.
+- [dwm-dragmfact](https://github.com/bakkeby/patches/blob/master/dwm/dwm-dragmfact-6.3.diff): Lets you resize the horizontal splits in layouts.
 - [dwm-dwmc](https://dwm.suckless.org/patches/dwmc): Simple dwmc client using a fork of fsignal to communicate with dwm.
 - [dwm-hide_vacant_tags](https://dwm.suckless.org/patches/hide_vacant_tags): Prevents dwm from drawing tags with no clients on the bar.
 - [dwm-insets](https://dwm.suckless.org/patches/insets): Defines custom insets from each edge of the screen.
