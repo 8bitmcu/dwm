@@ -192,7 +192,6 @@ pertag_layout = 1
 
 tags = [ "1", "2", "3", "4", "5", "6", "7", "8", "9" ]
 
-
 #########
 # rules #
 #########
@@ -262,7 +261,7 @@ buttons = [ { click = "ClkLtSymbol",    mask = 0,       button = "button1",   fu
             { click = "ClkStatusText",  mask = 0,       button = "button3",   function = "sigstatusbar",    argument = 3 },
             { click = "ClkClientWin",   mask = "alt",   button = "button1",   function = "movemouse",       argument = { } },
             { click = "ClkClientWin",   mask = "alt",   button = "button2",   function = "togglefloating",  argument = { } },
-            { click = "ClkClientWin",   mask = "alt",   button = "button3",   function = "resizemouse",     argument = { } },
+            { click = "ClkClientWin",   mask = "alt",   button = "button3",   function = "resizeorfacts",   argument = { } },
             { click = "ClkTagBar",      mask = 0,       button = "button1",   function = "view",            argument = { } },
             { click = "ClkTagBar",      mask = 0,       button = "button3",   function = "toggleview",      argument = { } },
             { click = "ClkTagBar",      mask = "alt",   button = "button1",   function = "tag",             argument = { } },

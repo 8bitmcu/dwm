@@ -70,8 +70,7 @@ cfg_read_float(toml_table_t *conf, char *key, float *dest)
 	toml_datum_t d = toml_double_in(conf, key);
 	if (!d.ok)
 		return;
-	float f = (float) d.u.d;
-	dest = &f;
+	*dest = d.u.d;
 }
 
 static int
@@ -80,8 +79,7 @@ cfg_read_int(toml_table_t *conf, char *key, int *dest)
 	toml_datum_t d = toml_int_in(conf, key);
 	if (!d.ok)
 		return 0;
-	int i = (int) d.u.i;
-	dest = &i;
+  *dest = d.u.i;
 	return 1;
 }
 
@@ -168,6 +166,14 @@ parse_functionargs(toml_table_t *tbl, void (**func)(const Arg *arg), const Arg *
 		*func = toggleview;
 	else if (!strcmp(field, "toggletag"))
 		*func = toggletag;
+	else if (!strcmp(field, "dragmfact"))
+		*func = dragmfact;
+	else if (!strcmp(field, "dragcfact"))
+		*func = dragcfact;
+	else if (!strcmp(field, "dragfact"))
+		*func = dragfact;
+	else if (!strcmp(field, "resizeorfacts"))
+		*func = resizeorfacts;
 	free((char *)field);
 }
 
