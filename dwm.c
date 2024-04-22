@@ -2621,8 +2621,8 @@ setup(void)
 	updategeom();
 	sp = sidepad;
 	vp = (topbar == 1) ? vertpad : - vertpad;
-	iconsize = iconsize ? iconsize : bh;
-	systrayiconsize = systrayiconsize ? systrayiconsize : bh;
+	iconsize = iconsize ? iconsize : bh - (iconpad * 2);
+	systrayiconsize = systrayiconsize ? systrayiconsize : bh - (systrayiconpad * 2);
 
 	/* init atoms */
 	utf8string = XInternAtom(dpy, "UTF8_STRING", False);

@@ -33,7 +33,7 @@ static unsigned int alphas[SchemeLast][3] = {
 	[SchemeInfoNorm] = { 255, 255, 255 },
 	[SchemeSystrayNorm] = { 255, 255, 255 }
 }; /* dwm-alpha */
-static int systraypinning = 0, systrayonleft = 0, systrayspacing = 0, 
+static int systraypinning = 0, systrayonleft = 0, systrayspacing = 0, systrayiconpad = 0, 
            systraypinningfailfirst = 0, showsystray = 0, systrayiconsize = 0; /* dwm-systray */
 static unsigned int gappih = 0, gappiv = 0, gappoh = 0, gappov = 0, smartgaps = 0, force_vsplit = 1; /* dwm-vanitygaps */
 static int enableswallow = 0, swallowfloating = 0; /* dwm-swallow */
@@ -45,7 +45,7 @@ static int vertpad = 0, sidepad = 0; /* dwm-barpadding */
 static int vertpadbar = 0, horizpadbar = 2; /* dwm-statuspadding */
 static int showtitle = 1; /* dwm-notitle */
 static int centretitle = 0; /* dwm-centretitle */
-static int winicon = 0, iconsize = 0, iconspacing = 0; /* dwm-winicon */
+static int winicon = 0, iconsize = 0, iconspacing = 0, iconpad = 0; /* dwm-winicon */
 static int ulinepad = 0, ulinestroke = 0, ulinevoffset = 0, ulineall = 0, showuline = 0; /* dwm-underlinetags */
 static const char *statusbar; /* dwm-statuscmd */
 static const char *font; /* dwm-pango */
@@ -268,6 +268,7 @@ read_cfgfile()
 			cfg_read_int(conf, "systrayspacing", &systrayspacing);
 			cfg_read_int(conf, "systraypinningfailfirst", &systraypinningfailfirst);
 			cfg_read_int(conf, "systrayiconsize", &systrayiconsize);
+			cfg_read_int(conf, "systrayiconpad", &systrayiconpad);
 			cfg_read_int(conf, "enableswallow", &enableswallow);
 			cfg_read_int(conf, "swallowfloating", &swallowfloating);
 			cfg_read_int(conf, "enablehidevacant", &enablehidevacant);
@@ -280,6 +281,7 @@ read_cfgfile()
 			cfg_read_int(conf, "centretitle", &centretitle);
 			cfg_read_int(conf, "winicon", &winicon);
 			cfg_read_int(conf, "iconsize", &iconsize);
+			cfg_read_int(conf, "iconpad", &iconpad);
 			cfg_read_int(conf, "iconspacing", &iconspacing);
 			cfg_read_int(conf, "showuline", &showuline);
 			cfg_read_int(conf, "ulinepad", &ulinepad);

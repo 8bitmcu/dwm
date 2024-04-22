@@ -64,7 +64,7 @@ vertpad = 0
 sidepad = 0
 
 # vertical space between the statusbar text-items. Ignored if barheight is specified
-vertpadbar = 0
+vertpadbar = 6
 
 # horizontal space between the statusbar text-items
 horizpadbar = 2
@@ -80,6 +80,9 @@ winicon = 1
 
 # window icon size. 0 means they will be calculated according to statusbar height
 iconsize = 0
+
+# window icon vertical padding. Ignored when iconsize is specified
+iconpad = 2
 
 # space between icon and window title
 iconspacing = 5
@@ -104,6 +107,9 @@ systrayspacing = 2
 
 # systray icon size. 0 means they will be calculated according to the statusbar height
 systrayiconsize = 0
+
+# systray icon vertical padding. Ignored when systrayiconsize is specified
+systrayiconpad = 2
 
 # 1: if pinning fails, display systray on the first monitor, 0: display systray on the last monitor
 systraypinningfailfirst = 1
