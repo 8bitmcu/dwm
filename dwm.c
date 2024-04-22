@@ -181,6 +181,7 @@ struct Monitor {
 	int by;               /* bar geometry */
 	int mx, my, mw, mh;   /* screen size */
 	int wx, wy, ww, wh;   /* window area  */
+	int wxo, wwo;         /* screen size without insets, used to draw bar */
 	int gappih;           /* horizontal gap between windows */
 	int gappiv;           /* vertical gap between windows */
 	int gappoh;           /* horizontal outer gaps */
@@ -635,8 +636,8 @@ buttonpress(XEvent *e)
 			arg.ui = 1 << i;
 		} else if (ev->x < x + TEXTW(selmon->ltsymbol))
 			click = ClkLtSymbol;
-		else if (ev->x > selmon->ww - statusw - getsystraywidth()) {
-			x = selmon->ww - statusw - getsystraywidth();
+		else if (ev->x > selmon->wwo - statusw - getsystraywidth()) {
+			x = selmon->wwo - statusw - getsystraywidth();
 			click = ClkStatusText;
 			statussig = 0;
 
@@ -1351,7 +1352,7 @@ drawbar(Monitor *m)
 	if(showsystray && m == systraytomon(m) && !systrayonleft) {
 		stw = getsystraywidth();
 		drw_setscheme(drw, scheme[SchemeSystrayNorm]);
-		drw_rect(drw, m->ww - stw, 0, stw, bh, 1, 1);
+		drw_rect(drw, m->wwo - stw, 0, stw, bh, 1, 1);
 	}
 
 	/* draw status first so it can be overdrawn by tags later */
@@ -1368,11 +1369,11 @@ drawbar(Monitor *m)
 
 				if (first) {
 					tw = TEXTWM(text);
-					drw_text(drw, m->ww - statusw + x - stw, 0, tw, bh, lrpad/2, text, 0, True);
+					drw_text(drw, m->wwo - statusw + x - stw, 0, tw, bh, lrpad/2, text, 0, True);
 					first = 0;
 				} else {
 					tw = TEXTWM(text) - lrpad;
-					drw_text(drw, m->ww - statusw + x - stw, 0, tw, bh, 0, text, 0, True);
+					drw_text(drw, m->wwo - statusw + x - stw, 0, tw, bh, 0, text, 0, True);
 				}
 				x += tw;
 				*s = ch;
@@ -1380,7 +1381,7 @@ drawbar(Monitor *m)
 			}
 		}
 		tw = TEXTWM(text) + 2;
-		drw_text(drw, m->ww - statusw + x - stw, 0, tw, bh, lrpad/2, text, 0, True);
+		drw_text(drw, m->wwo - statusw + x - stw, 0, tw, bh, lrpad/2, text, 0, True);
 		tw = statusw;
 	}
 
@@ -1416,12 +1417,12 @@ drawbar(Monitor *m)
     x = drw_text(drw, x, 0, w, bh, lrpad / 2, m->ltsymbol, 0, False);
   }
 
-	if ((w = m->ww - tw - stw - x) > bh) {
+	if ((w = m->wwo - tw - stw - x) > bh) {
 		if (m->sel && showtitle) {
 			drw_setscheme(drw, scheme[m == selmon ? SchemeInfoSel : SchemeInfoNorm]);
 			int iconsp = winicon > 0 && m->sel->icon ? m->sel->icw + iconspacing : 0;
 			if (centretitle > 0) {
-				tlpad = MAX((m->ww - ((int)TEXTW(m->sel->name) - lrpad)) / 2 - x, lrpad / 2);
+				tlpad = MAX((m->wwo - ((int)TEXTW(m->sel->name) - lrpad)) / 2 - x, lrpad / 2);
 				drw_text(drw, x, 0, w, bh, tlpad + iconsp, m->sel->name, 0, False);
 				if (winicon > 0 && m->sel->icon)
 					drw_pic(drw, x + tlpad, (bh - m->sel->ich) / 2, m->sel->icw, m->sel->ich, m->sel->icon);
@@ -1442,7 +1443,7 @@ drawbar(Monitor *m)
 			drw_rect(drw, x, 0, w - 2 * sp, bh, 1, 1);
 		}
 	}
-	drw_map(drw, m->barwin, 0, 0, m->ww, bh);
+	drw_map(drw, m->barwin, 0, 0, m->wwo, bh);
 }
 
 void
@@ -2215,10 +2216,10 @@ resize(Client *c, int x, int y, int w, int h, int interact)
 
 void
 resizebarwin(Monitor *m) {
-	unsigned int w = m->ww;
+	unsigned int w = m->wwo;
 	if (showsystray && m == systraytomon(m) && !systrayonleft)
 		w -= getsystraywidth();
-	XMoveResizeWindow(dpy, m->barwin, m->wx + sp, m->by + vp, m->ww -  2 * sp, bh);
+	XMoveResizeWindow(dpy, m->barwin, m->wxo + sp, m->by + vp, m->wwo -  (2 * sp), bh);
 }
 
 void
@@ -3036,10 +3037,10 @@ updatebars(void)
 	for (m = mons; m; m = m->next) {
 		if (m->barwin)
 			continue;
-		w = m->ww;
+		w = m->wwo;
 		if (showsystray && m == systraytomon(m))
 			w -= getsystraywidth();
-		m->barwin = XCreateWindow(dpy, root, m->wx + sp, m->by + vp, m->ww - 2 * sp, bh, 0, depth,
+		m->barwin = XCreateWindow(dpy, root, m->wxo + sp, m->by + vp, m->wwo - 2 * sp, bh, 0, depth,
 				InputOutput, visual,
 				CWOverrideRedirect|CWBackPixel|CWBorderPixel|CWColormap|CWEventMask, &wa);
 		XDefineCursor(dpy, m->barwin, cursor[CurNormal]->cursor);
@@ -3055,6 +3056,9 @@ updatebarpos(Monitor *m)
 {
 	m->wy = m->my;
 	m->wh = m->mh;
+	m->wxo = m->wx = m->mx;
+	m->wwo = m->ww = m->mw;
+
 	if (m->showbar) {
 		m->wh = m->wh - vertpad - bh;
 		m->by = m->topbar ? m->wy : m->wy + m->wh + vertpad;

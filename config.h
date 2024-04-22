@@ -79,7 +79,7 @@ cfg_read_int(toml_table_t *conf, char *key, int *dest)
 	toml_datum_t d = toml_int_in(conf, key);
 	if (!d.ok)
 		return 0;
-  *dest = d.u.i;
+	*dest = d.u.i;
 	return 1;
 }
 
