@@ -41,6 +41,7 @@ static const char *statusbar = NULL; /* dwm-statuscmd */
 static const char *font = NULL; /* dwm-pango */
 static int pertag_showbars = 0, pertag_nmaster = 0, pertag_mfact = 0, pertag_layout = 0; /* dwm-pertag */
 static int showlayout = 1;
+static int focus_follows_mouse = 0;
 
 #include "vanitygaps.c"
 
@@ -296,6 +297,7 @@ read_cfgfile()
 			cfg_read_int(conf, "pertag_nmaster", &pertag_nmaster);
 			cfg_read_int(conf, "pertag_mfact", &pertag_mfact);
 			cfg_read_int(conf, "pertag_layout", &pertag_layout);
+			cfg_read_int(conf, "focus_follows_mouse", &focus_follows_mouse);
 			if (!cfg_read_str(conf, "font", &font))
 				font = strdup("monospace 10");
 			if (!cfg_read_str(conf, "statusbar", &statusbar))
@@ -334,40 +336,42 @@ read_cfgfile()
 				cfg_read_int(ctbl, "BorderAlpha", (int *) &statusbar_alphas[2]);
 			}
 
-			if (!statusbar_colors[ColFg])     statusbar_colors[ColFg] = strdup("#bbbbbb");
-			if (!statusbar_colors[ColBg])     statusbar_colors[ColBg] = strdup("#222222");
-			if (!statusbar_colors[ColBorder]) statusbar_colors[ColBorder] = strdup("#444444");
+			if (!statusbar_colors[ColFg])
+				statusbar_colors[ColFg] = strdup("#bbbbbb");
+			if (!statusbar_colors[ColBg])
+				statusbar_colors[ColBg] = strdup("#222222");
+			if (!statusbar_colors[ColBorder])
+				statusbar_colors[ColBorder] = strdup("#444444");
 
 			for (int j = 0; j < SchemeLast; j++) {
-					toml_table_t *tbl = toml_table_in(conf, colorsn[j]);
-					
-					if (tbl) {
-							if (!cfg_read_str(tbl, "ColFg", &colors[j][ColFg]))
-									colors[j][ColFg] = strdup(statusbar_colors[ColFg]);
-							if (!cfg_read_str(tbl, "ColBg", &colors[j][ColBg]))
-									colors[j][ColBg] = strdup(statusbar_colors[ColBg]);
-							if (!cfg_read_str(tbl, "Border", &colors[j][ColBorder]))
-									colors[j][ColBorder] = strdup(statusbar_colors[ColBorder]);
-							if (!cfg_read_int(tbl, "FgAlpha", (int *) &alphas[j][0]))
-								alphas[j][0] = statusbar_alphas[0];
-							if (!cfg_read_int(tbl, "BgAlpha", (int *) &alphas[j][1]))
-								alphas[j][1] = statusbar_alphas[1];
-							if (!cfg_read_int(tbl, "BorderAlpha", (int *) &alphas[j][2]))
-								alphas[j][2] = statusbar_alphas[2];
-
-					} else {
-							colors[j][ColFg]     = strdup(statusbar_colors[ColFg]);
-							colors[j][ColBg]     = strdup(statusbar_colors[ColBg]);
-							colors[j][ColBorder] = strdup(statusbar_colors[ColBorder]);
-							alphas[j][0] = statusbar_alphas[0];
-							alphas[j][1] = statusbar_alphas[1];
-							alphas[j][2] = statusbar_alphas[2];
-					}
+				toml_table_t *tbl = toml_table_in(conf, colorsn[j]);
+				
+				if (tbl) {
+					if (!cfg_read_str(tbl, "ColFg", &colors[j][ColFg]))
+						colors[j][ColFg] = strdup(statusbar_colors[ColFg]);
+					if (!cfg_read_str(tbl, "ColBg", &colors[j][ColBg]))
+						colors[j][ColBg] = strdup(statusbar_colors[ColBg]);
+					if (!cfg_read_str(tbl, "Border", &colors[j][ColBorder]))
+						colors[j][ColBorder] = strdup(statusbar_colors[ColBorder]);
+					if (!cfg_read_int(tbl, "FgAlpha", (int *) &alphas[j][0]))
+						alphas[j][0] = statusbar_alphas[0];
+					if (!cfg_read_int(tbl, "BgAlpha", (int *) &alphas[j][1]))
+						alphas[j][1] = statusbar_alphas[1];
+					if (!cfg_read_int(tbl, "BorderAlpha", (int *) &alphas[j][2]))
+						alphas[j][2] = statusbar_alphas[2];
+				} else {
+					colors[j][ColFg]     = strdup(statusbar_colors[ColFg]);
+					colors[j][ColBg]     = strdup(statusbar_colors[ColBg]);
+					colors[j][ColBorder] = strdup(statusbar_colors[ColBorder]);
+					alphas[j][0] = statusbar_alphas[0];
+					alphas[j][1] = statusbar_alphas[1];
+					alphas[j][2] = statusbar_alphas[2];
+				}
 			}
 
 			for (int i = 0; i < ColLast; i++) {
-					if (statusbar_colors[i])
-							free((void *)statusbar_colors[i]);
+				if (statusbar_colors[i])
+					free((void *)statusbar_colors[i]);
 			}
 
 			/* rules */

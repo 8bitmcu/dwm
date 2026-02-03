@@ -3528,6 +3528,18 @@ view(const Arg *arg)
 
 	focus(selmon->pertag->sel[selmon->pertag->curtag]);
 	arrange(selmon);
+
+	/* focus follows cursor */
+	if (focus_follows_mouse) {
+		Window dummyw, child;
+		int dummyi;
+		unsigned int dummym;
+		if (XQueryPointer(dpy, root, &dummyw, &child, &dummyi, &dummyi, &dummyi, &dummyi, &dummym)) {
+			Client *c = wintoclient(child);
+			if (c && ISVISIBLE(c))
+				focus(c);
+		}
+	}
 }
 
 Client *
