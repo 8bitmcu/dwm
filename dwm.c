@@ -421,6 +421,7 @@ applyrules(Client *c)
 
 	for (i = 0; i < n_rules; i++) {
 		r = rules[i];
+		if (!r) continue;
 		if ((!r->title || strstr(c->name, r->title))
 		&& (!r->class || strstr(class, r->class))
 		&& (!r->instance || strstr(instance, r->instance)))
@@ -727,26 +728,37 @@ cleanup(void)
 		free((void *)rules[i]->title);
 		free((void *)rules[i]);
 	}
+	for (i = 0; i < n_rules; i++) {
+		if (!rules[i]) continue;
+		free((void *)rules[i]->class);
+		free((void *)rules[i]->instance);
+		free((void *)rules[i]->title);
+		free(rules[i]);
+	}
 	free(rules);
 	for (i = 0; i < n_layouts; i++) {
 		free((void *)layouts[i]->symbol);
-		free((void *)layouts[i]);
+		free(layouts[i]);
 	}
 	free(layouts);
 	for (i = 0; i < n_keys; i++) {
-		if (keys[i]->func == spawn) {
-			int j = 0;
-			while (((char **) keys[i]->arg.v)[j] != NULL) {
-				free(((char **) keys[i]->arg.v)[j]);
-				j++;
-			}
-			free(((char **) keys[i]->arg.v));
+		if (keys[i]->func == spawn && keys[i]->arg.v) {
+			char **v = (char **)keys[i]->arg.v;
+			for (int j = 0; v[j]; j++) free(v[j]);
+			free(v);
 		}
-		free((void *)keys[i]);
+		free(keys[i]);
 	}
 	free(keys);
+	for (i = 0; i < SchemeLast; i++) {
+		for (int j = 0; j < ColLast; j++) {
+			free((void *)colors[i][j]);
+			colors[i][j] = NULL;
+		}
+	}
+
 	for (i = 0; i < n_buttons; i++) {
-		if (buttons[i]->func == spawn) {
+		if (buttons[i]->func == spawn && buttons[i]->arg.v) {
 			int j = 0;
 			while (((char **) buttons[i]->arg.v)[j] != NULL) {
 				free(((char **) buttons[i]->arg.v)[j]);
@@ -756,6 +768,10 @@ cleanup(void)
 		}
 		free((void *)buttons[i]);
 	}
+
+	free((void *)autostart);
+	free((void *)autostart_blocking);
+
 	free(buttons);
 	free((void *) statusbar);
 	free((void *) font);
@@ -2356,19 +2372,53 @@ run(void)
 			handler[ev.type](&ev); /* call handler */
 }
 
+static void
+spawn_external(char *const argv[])
+{
+	if (fork() == 0) {
+		setsid();
+		signal(SIGCHLD, SIG_DFL);
+		signal(SIGPIPE, SIG_DFL);
+		signal(SIGALRM, SIG_DFL);
+		signal(SIGUSR1, SIG_DFL);
+		signal(SIGUSR2, SIG_DFL);
+
+		execvp(argv[0], argv);
+		fprintf(stderr, "dwm: execvp %s failed\n", argv[0]);
+		_exit(EXIT_FAILURE);
+	}
+}
+
 void
 runautostart(void)
 {
-	char *path = strcat(getenv("HOME"), autostart_blocking);
-	if (strlen(autostart_blocking) > 0 && access(path, X_OK) == 0)
-		system(path);
+	char path[PATH_MAX];
+	const char *home = getenv("HOME");
+	if (!home) return;
 
-	char *path2 = strcat(getenv("HOME"), autostart);
-	if (strlen(autostart) > 0 && access(path2, X_OK) == 0)
-		system(strcat(path2, " &"));
+	if (autostart_blocking && autostart_blocking[0] != '\0') {
+		snprintf(path, sizeof(path), "%s%s", home, autostart_blocking);
+		if (access(path, X_OK) == 0) {
+			if (fork() == 0) {
+				char *args[] = {path, NULL};
+				execvp(args[0], args);
+				_exit(1);
+			}
+			wait(NULL);
+		}
+	}
 
-	free((void *) autostart);
-	free((void *) autostart_blocking);
+	if (autostart && autostart[0] != '\0') {
+		snprintf(path, sizeof(path), "%s%s", home, autostart);
+		if (access(path, X_OK) == 0) {
+			char *args[] = {"/bin/sh", path, NULL};
+			spawn_external(args);
+		}
+	}
+
+	free((void *)autostart);
+	free((void *)autostart_blocking);
+	autostart = autostart_blocking = NULL;
 }
 
 void

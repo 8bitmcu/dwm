@@ -1,17 +1,7 @@
-/* configuration file location, subdirectory of XDG_CONFIG_HOME */
+/* configuration file location, subdirectory of XDG_CONFIG_HOME or HOME */
 static const char *dwm_cfg = "/dwm/dwm.toml";
 
-static const char *colors[SchemeLast][ColLast] = {
-	[SchemeNorm] = { "#bbbbbb", "#222222", "#444444" },
-	[SchemeSel] = { "#eeeeee", "#005577", "#005577" },
-	[SchemeStatus] = { "#bbbbbb", "#222222", "#000000" },
-	[SchemeTagsSel] = { "#eeeeee", "#005577", "#000000" },
-	[SchemeTagsNorm] = { "#bbbbbb", "#222222", "#000000" },
-	[SchemeLayoutNorm] = { "#bbbbbb", "#222222", "#000000" },
-	[SchemeInfoSel] = { "#eeeeee", "#005577", "#000000" },
-	[SchemeInfoNorm] = { "#bbbbbb", "#222222", "#000000" },
-	[SchemeSystrayNorm] = { "#000000", "#222222", "#000000" }
-};
+static const char *colors[SchemeLast][ColLast];
 static int borderpx = 2, snap = 32, showbar = 1, topbar = 1;
 static float mfact = 0.55;
 static int nmaster = 1, resizehints = 1, lockfullscreen = 1;
@@ -39,7 +29,7 @@ static unsigned int gappih = 0, gappiv = 0, gappoh = 0, gappov = 0, smartgaps = 
 static int enableswallow = 0, swallowfloating = 0; /* dwm-swallow */
 static int enablehidevacant = 0; /* dwm-hide_vacant_tags */
 static Inset default_inset = { .x = 0, .y = 0, .w = 0, .h = 0 }; /* dwm-insets */
-static const char *autostart = "", *autostart_blocking = ""; /* dwm-autostart */
+static const char *autostart = NULL, *autostart_blocking = NULL; /* dwm-autostart */
 static int barheight = 0; /* dwm-bar-height */
 static int vertpad = 0, sidepad = 0; /* dwm-barpadding */
 static int vertpadbar = 0, horizpadbar = 2; /* dwm-statuspadding */
@@ -47,8 +37,8 @@ static int showtitle = 1; /* dwm-notitle */
 static int centretitle = 0; /* dwm-centretitle */
 static int winicon = 0, iconsize = 0, iconspacing = 0, iconpad = 0; /* dwm-winicon */
 static int ulinepad = 0, ulinestroke = 0, ulinevoffset = 0, ulineall = 0, showuline = 0; /* dwm-underlinetags */
-static const char *statusbar; /* dwm-statuscmd */
-static const char *font; /* dwm-pango */
+static const char *statusbar = NULL; /* dwm-statuscmd */
+static const char *font = NULL; /* dwm-pango */
 static int pertag_showbars = 0, pertag_nmaster = 0, pertag_mfact = 0, pertag_layout = 0; /* dwm-pertag */
 static int showlayout = 1;
 
@@ -113,8 +103,9 @@ parse_functionargs(toml_table_t *tbl, void (**func)(const Arg *arg), const Arg *
 	if (!strcmp(field, "spawn")) {
 		*func = spawn;
 		const char **v;
-		cfg_read_strarr(tbl, "argument", &v, 1);
-		((Arg *)arg)->v = v;
+		if (cfg_read_strarr(tbl, "argument", &v, 1)) {
+				((Arg *)arg)->v = v;
+		}
 	} else if (!strcmp(field, "togglebar"))
 		*func = togglebar;
 	else if (!strcmp(field, "focusstack")) {
@@ -209,12 +200,15 @@ parse_keysym(toml_table_t *tbl, char *f)
 }
 
 void
-parse_tag(toml_table_t *tbl, char *field, int *dest)
+parse_tag(toml_table_t *tbl, char *field, unsigned int *dest)
 {
-	int val;
-	cfg_read_int(tbl, field, (int *)&val);
-	val = 1 << val;
-	dest = &val;
+	int val = 0;
+	if (cfg_read_int(tbl, field, &val)) {
+		if (val > 0)
+			*dest = 1 << (val - 1);
+		else
+			*dest = 0;
+	}
 }
 
 void
@@ -225,11 +219,10 @@ load_defaults(char *error)
 	statusbar = strdup("dwmblocks");
 	autostart = strdup("");
 	autostart_blocking = strdup("");
-
 	n_layouts = 1;
 	layouts = ecalloc(n_layouts, sizeof(Layout *));
 	Layout *l = ecalloc(1, sizeof(Layout));
-	l->symbol = "[]=";
+	l->symbol = strdup("[]=");
 	l->arrange = tile;
 	layouts[0] = l;
 
@@ -241,8 +234,19 @@ load_defaults(char *error)
 void
 read_cfgfile()
 {
-	const char *config_file = strcat(getenv("XDG_CONFIG_HOME"), dwm_cfg);
-	FILE *fp = fopen(config_file, "r");
+	char path[PATH_MAX];
+	const char *xdg = getenv("XDG_CONFIG_HOME");
+	const char *home = getenv("HOME");
+
+	if (xdg && xdg[0] != '\0') {
+			/* use xdg_config_home if set */
+			snprintf(path, sizeof(path), "%s%s", xdg, dwm_cfg);
+	} else if (home && home[0] != '\0') {
+			/* fallback to ~/.config */
+			snprintf(path, sizeof(path), "%s/.config%s", home, dwm_cfg);
+	}
+
+	FILE *fp = fopen(path, "r");
 	if (fp) {
 		char errbuf[200];
 		toml_table_t *conf = toml_parse_file(fp, errbuf, sizeof(errbuf));
@@ -315,10 +319,13 @@ read_cfgfile()
 				tags[0] = strdup("1");
 			}
 
-			const char *statusbar_colors[ColLast] = { "#bbbbbb", "#222222", "#444444" };
+			/* color table */
+			int val;
 			unsigned int statusbar_alphas[3] = { 255, 255, 255 };
+			const char *statusbar_colors[ColLast] = { NULL, NULL, NULL };
 			toml_table_t *ctbl = toml_table_in(conf, "StatusBar");
-			if(ctbl) {
+
+			if (ctbl) {
 				cfg_read_str(ctbl, "ColFg", &statusbar_colors[ColFg]);
 				cfg_read_str(ctbl, "ColBg", &statusbar_colors[ColBg]);
 				cfg_read_str(ctbl, "Border", &statusbar_colors[ColBorder]);
@@ -327,31 +334,42 @@ read_cfgfile()
 				cfg_read_int(ctbl, "BorderAlpha", (int *) &statusbar_alphas[2]);
 			}
 
-			/* color table */
-			for (int j = 0; j < LENGTH(colorsn); j++) {
-				toml_table_t *tbl = toml_table_in(conf, colorsn[j]);
-				if(!tbl) {
-					colors[j][ColFg] = statusbar_colors[ColFg];
-					colors[j][ColBg] = statusbar_colors[ColBg];
-					colors[j][ColBorder] = statusbar_colors[ColBorder];
-					alphas[j][0] = statusbar_alphas[0];
-					alphas[j][1] = statusbar_alphas[1];
-					alphas[j][2] = statusbar_alphas[2];
-					continue;
-				}
-				if (!cfg_read_str(tbl, "ColFg", &colors[j][ColFg]))
-					colors[j][ColFg] = statusbar_colors[ColFg];
-				if (!cfg_read_str(tbl, "ColBg", &colors[j][ColBg]))
-					colors[j][ColBg] = statusbar_colors[ColBg];
-				if (!cfg_read_str(tbl, "Border", &colors[j][ColBorder]))
-					colors[j][ColBorder] = statusbar_colors[ColBorder];
-				if (!cfg_read_int(tbl, "FgAlpha", (int *) &alphas[j][0]))
-					alphas[j][0] = statusbar_alphas[0];
-				if (!cfg_read_int(tbl, "BgAlpha", (int *) &alphas[j][1]))
-					alphas[j][1] = statusbar_alphas[1];
-				if (!cfg_read_int(tbl, "BorderAlpha", (int *) &alphas[j][2]))
-					alphas[j][2] = statusbar_alphas[2];
+			if (!statusbar_colors[ColFg])     statusbar_colors[ColFg] = strdup("#bbbbbb");
+			if (!statusbar_colors[ColBg])     statusbar_colors[ColBg] = strdup("#222222");
+			if (!statusbar_colors[ColBorder]) statusbar_colors[ColBorder] = strdup("#444444");
+
+			for (int j = 0; j < SchemeLast; j++) {
+					toml_table_t *tbl = toml_table_in(conf, colorsn[j]);
+					
+					if (tbl) {
+							if (!cfg_read_str(tbl, "ColFg", &colors[j][ColFg]))
+									colors[j][ColFg] = strdup(statusbar_colors[ColFg]);
+							if (!cfg_read_str(tbl, "ColBg", &colors[j][ColBg]))
+									colors[j][ColBg] = strdup(statusbar_colors[ColBg]);
+							if (!cfg_read_str(tbl, "Border", &colors[j][ColBorder]))
+									colors[j][ColBorder] = strdup(statusbar_colors[ColBorder]);
+							if (!cfg_read_int(tbl, "FgAlpha", (int *) &alphas[j][0]))
+								alphas[j][0] = statusbar_alphas[0];
+							if (!cfg_read_int(tbl, "BgAlpha", (int *) &alphas[j][1]))
+								alphas[j][1] = statusbar_alphas[1];
+							if (!cfg_read_int(tbl, "BorderAlpha", (int *) &alphas[j][2]))
+								alphas[j][2] = statusbar_alphas[2];
+
+					} else {
+							colors[j][ColFg]     = strdup(statusbar_colors[ColFg]);
+							colors[j][ColBg]     = strdup(statusbar_colors[ColBg]);
+							colors[j][ColBorder] = strdup(statusbar_colors[ColBorder]);
+							alphas[j][0] = statusbar_alphas[0];
+							alphas[j][1] = statusbar_alphas[1];
+							alphas[j][2] = statusbar_alphas[2];
+					}
 			}
+
+			for (int i = 0; i < ColLast; i++) {
+					if (statusbar_colors[i])
+							free((void *)statusbar_colors[i]);
+			}
+
 			/* rules */
 			toml_array_t *d = toml_array_in(conf, "rules");
 			if (d) {
@@ -381,7 +399,7 @@ read_cfgfile()
 				n_layouts = toml_array_nelem(d);
 				layouts = ecalloc(n_layouts, sizeof(Layout *));
 				for (int i = 0; i < n_layouts; i++) {
-					const char *field;
+					const char *field = NULL;
 					toml_table_t *tbl = toml_table_at(d, i);
 					if (!tbl)
 						continue;
@@ -390,6 +408,8 @@ read_cfgfile()
 					cfg_read_str(tbl, "arrange", &field);
 					if (!strcmp(field, "tile"))
 						l->arrange = tile;
+					else if (!strcmp(field, "tileleft"))
+						l->arrange = tileleft;
 					else if (!strcmp(field, "monocle"))
 						l->arrange = monocle;
 					else if (!strcmp(field, "spiral"))
@@ -414,8 +434,6 @@ read_cfgfile()
 						l->arrange = centeredmaster;
 					else if (!strcmp(field, "centeredfloatingmaster"))
 						l->arrange = centeredfloatingmaster;
-					else if (!strcmp(field, "nrowgrid"))
-						l->arrange = nrowgrid;
 					else
 					l->arrange = NULL;
 					layouts[i] = l;
@@ -424,10 +442,15 @@ read_cfgfile()
 			} else {
 				n_layouts = 1;
 				layouts = ecalloc(n_layouts, sizeof(Layout *));
-				Layout *l = ecalloc(1, sizeof(Layout));
-				l->symbol = "[]=";
+				Layout *l = ecalloc(n_layouts, sizeof(Layout));
+				l->symbol = strdup("[]=");
 				l->arrange = tile;
 				layouts[0] = l;
+
+				for (Monitor *m = mons; m; m = m->next) {
+					m->lt[0] = &layouts[0];
+					m->lt[1] = (n_layouts > 1) ? &layouts[1] : &layouts[0];
+				}
 			}
 			/* buttons */
 			d = toml_array_in(conf, "buttons");
