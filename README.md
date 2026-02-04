@@ -46,7 +46,10 @@ Have a look at [dwm.toml](dwm.toml) and [sxhkdrc](sxhkdrc)!
 Building and installing
 -----------------------
 
-1. clone this repository locally on your machine
+1. clone this repository with submodules locally on your machine:
+```Bash
+git clone --recursive https://github.com/8bitmcu/dwm.git
+```
 2. run `make clean && sudo make install` from within the repository folder
 3. copy and edit the config file: `cp /etc/dwm/dwm.toml $XDG_CONFIG_HOME/dwm/dwm.toml`
 4. copy and edit the keybindings: `cp /etc/dwm/sxhkdrc $XDG_CONFIG_HOME/sxhkd/sxhkdrc`

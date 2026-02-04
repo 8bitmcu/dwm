@@ -42,6 +42,7 @@ static const char *font = NULL; /* dwm-pango */
 static int pertag_showbars = 0, pertag_nmaster = 0, pertag_mfact = 0, pertag_layout = 0; /* dwm-pertag */
 static int showlayout = 1;
 static int focus_follows_mouse = 0;
+static int refreshrate = 120;
 
 #include "vanitygaps.c"
 
@@ -298,6 +299,7 @@ read_cfgfile()
 			cfg_read_int(conf, "pertag_mfact", &pertag_mfact);
 			cfg_read_int(conf, "pertag_layout", &pertag_layout);
 			cfg_read_int(conf, "focus_follows_mouse", &focus_follows_mouse);
+			cfg_read_int(conf, "refreshrate", &refreshrate);
 			if (!cfg_read_str(conf, "font", &font))
 				font = strdup("monospace 10");
 			if (!cfg_read_str(conf, "statusbar", &statusbar))
